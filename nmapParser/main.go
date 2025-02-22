@@ -8,8 +8,6 @@ import (
 )
 
 func main() {
-	// Open the XML file
-
 	if len(os.Args) < 2 {
 		fmt.Println("Missing parameter, require a file path/name!")
 		return
@@ -31,7 +29,7 @@ func main() {
 		panic(err)
 	}
 
-	// Print the extracted values
+	// Test printing the extracted values
 	fmt.Printf("Up: %d\n", doc.RunStats.Hosts.Up)
 	fmt.Printf("Down: %d\n", doc.RunStats.Hosts.Down)
 	fmt.Printf("Total: %d\n", doc.RunStats.Hosts.Total)
