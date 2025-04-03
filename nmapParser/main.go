@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"nmapParser/generator"
-	"nmapParser/parser"
+	"nmapManagement/nmapParser/generator"
+	"nmapManagement/nmapParser/parser"
 	"os"
 )
 

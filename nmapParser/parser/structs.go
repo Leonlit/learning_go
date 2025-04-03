@@ -38,11 +38,15 @@ type PortState struct {
 }
 
 type PortService struct {
-	ServiceName        string   `xml:"name,attr"`
-	ServiceProduct     string   `xml:"product,attr"`
-	ServiceVersion     string   `xml:"version,attr"`
-	ServiceFingerPrint string   `xml:"servicefp,attr"`
-	ServiceCPE         []string `xml:"cpe"`
+	ServiceName        string `xml:"name,attr"`
+	ServiceProduct     string `xml:"product,attr"`
+	ServiceVersion     string `xml:"version,attr"`
+	ServiceFingerPrint string `xml:"servicefp,attr"`
+	ServiceCPE         []CPE  `xml:"cpe"`
+}
+
+type CPE struct {
+	Value string `xml:",chardata"`
 }
 
 type PortScript struct {

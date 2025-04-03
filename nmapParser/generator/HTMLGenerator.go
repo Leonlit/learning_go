@@ -3,7 +3,7 @@ package generator
 import (
 	"fmt"
 	"html/template"
-	"nmapParser/parser"
+	"nmapManagement/nmapParser/parser"
 	"os"
 	"path/filepath"
 	"runtime"
