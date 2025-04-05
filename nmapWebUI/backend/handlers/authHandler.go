@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"nmapManagement/nmapWebUI/utils"
 	"time"
@@ -39,6 +40,8 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	username := user["username"]
 	password := user["password"]
 
+	fmt.Print("Login in user")
+
 	// Validate user credentials (e.g., check against a database)
 	if !validateCredentials(username, password) {
 		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
@@ -57,7 +60,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(`{"token":"` + token + `"}`))
 }
 
-func RegisterUser(w http.ResponseWriter, r *http.Request) {
+func RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
 	// register user
 }
 
