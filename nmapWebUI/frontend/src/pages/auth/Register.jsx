@@ -28,6 +28,9 @@ function RegisterPage () {
 		})
 		.then((data) => {
 			console.log(data);
+			if (data.status == 201) {
+				navigate("/registerSuccess")
+			}
 			// Handle successful login here
 		})
 		.catch((error) => {

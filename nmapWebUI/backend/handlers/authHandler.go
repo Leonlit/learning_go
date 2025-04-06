@@ -49,15 +49,8 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("Loging in user")
 
-	passwordHash, err := hashPassword(password)
-
-	if err != nil {
-		http.Error(w, "Unexpected Error!", http.StatusBadRequest)
-		return
-	}
-
 	// Validate user credentials (e.g., check against a database)
-	if !databases.VerifyUserCredentials(username, passwordHash) {
+	if !databases.VerifyUserCredentials(username, password) {
 		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
 		return
 	}
@@ -65,6 +58,8 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	// Generate JWT token
 	token, err := generateJWT(username)
 	if err != nil {
+		log.Println("Error generating token!")
+		log.Println(err)
 		http.Error(w, "Error generating token", http.StatusInternalServerError)
 		return
 	}
@@ -77,6 +72,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		Path:     "/",
 		SameSite: http.SameSiteStrictMode,
 	})
+	utils.SendJSONResponse(w, "User valid", http.StatusOK)
 }
 
 func RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
@@ -145,7 +141,7 @@ func generateJWT(username string) (string, error) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(secretKey)
+	return token.SignedString([]byte(secretKey))
 }
 
 func ParseJWT(tokenString string) (*Claims, error) {
