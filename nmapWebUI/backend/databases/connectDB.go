@@ -10,7 +10,7 @@ import (
 	_ "github.com/lib/pq" // PostgreSQL driver
 )
 
-var DBObj sql.DB
+var DBObj *sql.DB
 
 // DBConfig holds the configuration for the database connection
 type DBConfig struct {
@@ -37,11 +37,11 @@ func InitDB() {
 		SSLMode:  "disable", // Use "require" for production
 	}
 
-	DBObj, err := NewDB(dbConfig)
+	DBObj, err = NewDB(dbConfig)
 	if err != nil {
 		log.Fatalf("Failed to connect to the database: %v", err)
 	}
-	defer DBObj.Close()
+	//defer DBObj.Close()
 	log.Println("Connected to DB")
 }
 

@@ -18,7 +18,7 @@ function RegisterPage () {
 			headers: {
 				'Content-Type': 'application/json',
 			},
-			body: JSON.stringify({ username: username, password: password }),
+			body: JSON.stringify({ username: username, password: password, repeatPassword: repeatPassword }),
 		})
 		.then((response) => {
 			if (!response.ok) {
