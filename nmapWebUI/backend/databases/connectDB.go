@@ -4,9 +4,13 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"nmapManagement/nmapWebUI/utils"
+	"strconv"
 
 	_ "github.com/lib/pq" // PostgreSQL driver
 )
+
+var DBObj sql.DB
 
 // DBConfig holds the configuration for the database connection
 type DBConfig struct {
@@ -16,6 +20,29 @@ type DBConfig struct {
 	Password string
 	DBName   string
 	SSLMode  string
+}
+
+func InitDB() {
+	dbPort, err := strconv.Atoi(utils.LoadEnv("DB_PORT"))
+	if err != nil {
+		log.Fatalf("Invalid DB port number: %v", err)
+	}
+
+	dbConfig := DBConfig{
+		Host:     utils.LoadEnv("DB_HOST"),
+		Port:     dbPort,
+		User:     utils.LoadEnv("DB_USER"),
+		Password: utils.LoadEnv("DB_PASS"),
+		DBName:   utils.LoadEnv("DB_NAME"),
+		SSLMode:  "disable", // Use "require" for production
+	}
+
+	DBObj, err := NewDB(dbConfig)
+	if err != nil {
+		log.Fatalf("Failed to connect to the database: %v", err)
+	}
+	defer DBObj.Close()
+	log.Println("Connected to DB")
 }
 
 // NewDB initializes and returns a new database connection

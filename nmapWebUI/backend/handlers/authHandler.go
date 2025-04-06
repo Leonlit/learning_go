@@ -5,11 +5,11 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"nmapManagement/nmapWebUI/databases"
 	"nmapManagement/nmapWebUI/utils"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type Claims struct {
@@ -17,14 +17,7 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
-// Access the JWT_SECRET_KEY from the environment
 var secretKey = utils.LoadEnv("JWT_SECRET_KEY")
-
-func validateCredentials(username, password string) bool {
-	storedPasswordHash := ""
-	err := bcrypt.CompareHashAndPassword([]byte(storedPasswordHash), []byte(password))
-	return err == nil
-}
 
 // Handle login operation
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -40,10 +33,10 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	username := user["username"]
 	password := user["password"]
 
-	fmt.Print("Login in user")
+	fmt.Print("Loging in user")
 
 	// Validate user credentials (e.g., check against a database)
-	if !validateCredentials(username, password) {
+	if !databases.VerifyUserCredentials(username, password) {
 		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
 		return
 	}
@@ -55,9 +48,14 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Send the token to the client
-	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte(`{"token":"` + token + `"}`))
+	http.SetCookie(w, &http.Cookie{
+		Name:     "auth_token",
+		Value:    token,
+		HttpOnly: true,
+		Secure:   false, // Only for HTTPS //TODO: Turn on cookies Secure flag during prods
+		Path:     "/",
+		SameSite: http.SameSiteStrictMode,
+	})
 }
 
 func RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
@@ -69,7 +67,7 @@ func GenerateJWT(username string) (string, error) {
 		Username: username,
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    "nmap-management",
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)), // Expiry set to 1 day
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(8 * time.Hour)), // Expiry set to 8 hour
 		},
 	}
 
