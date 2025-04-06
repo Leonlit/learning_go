@@ -27,3 +27,38 @@
 2025/04/06 15:20:34 connectDB.go:45: Connected to DB
 2025/04/06 15:20:34 main.go:41: Using port 8080
 2025/04/06 15:20:34 main.go:42: Server running on: http://localhost:8080
+2025/04/06 17:41:19 connectDB.go:66: Successfully connected to the database
+2025/04/06 17:41:19 connectDB.go:45: Connected to DB
+2025/04/06 17:41:19 main.go:41: Using port 8080
+2025/04/06 17:41:19 main.go:42: Server running on: http://localhost:8080
+2025/04/06 17:42:28 usersdb.go:30: invalid password
+2025/04/06 17:42:39 usersdb.go:30: invalid password
+2025/04/06 17:44:33 connectDB.go:66: Successfully connected to the database
+2025/04/06 17:44:33 connectDB.go:45: Connected to DB
+2025/04/06 17:44:33 main.go:41: Using port 8080
+2025/04/06 17:44:33 main.go:42: Server running on: http://localhost:8080
+2025/04/06 17:44:35 usersdb.go:32: invalid password
+2025/04/06 17:45:18 usersdb.go:32: invalid password
+2025/04/06 17:46:28 usersdb.go:32: invalid password
+2025/04/06 17:50:17 connectDB.go:66: Successfully connected to the database
+2025/04/06 17:50:17 connectDB.go:45: Connected to DB
+2025/04/06 17:50:17 main.go:41: Using port 8080
+2025/04/06 17:50:17 main.go:42: Server running on: http://localhost:8080
+2025/04/06 17:51:25 connectDB.go:66: Successfully connected to the database
+2025/04/06 17:51:25 connectDB.go:45: Connected to DB
+2025/04/06 17:51:25 main.go:41: Using port 8080
+2025/04/06 17:51:25 main.go:42: Server running on: http://localhost:8080
+2025/04/06 17:53:00 connectDB.go:66: Successfully connected to the database
+2025/04/06 17:53:00 connectDB.go:45: Connected to DB
+2025/04/06 17:53:00 main.go:41: Using port 8080
+2025/04/06 17:53:00 main.go:42: Server running on: http://localhost:8080
+2025/04/06 17:53:02 authHandler.go:61: Error generating token!
+2025/04/06 17:53:02 authHandler.go:62: key is of invalid type: HMAC sign expects []byte
+2025/04/06 17:55:31 connectDB.go:66: Successfully connected to the database
+2025/04/06 17:55:31 connectDB.go:45: Connected to DB
+2025/04/06 17:55:31 main.go:41: Using port 8080
+2025/04/06 17:55:31 main.go:42: Server running on: http://localhost:8080
+2025/04/06 17:56:45 connectDB.go:66: Successfully connected to the database
+2025/04/06 17:56:45 connectDB.go:45: Connected to DB
+2025/04/06 17:56:45 main.go:41: Using port 8080
+2025/04/06 17:56:45 main.go:42: Server running on: http://localhost:8080

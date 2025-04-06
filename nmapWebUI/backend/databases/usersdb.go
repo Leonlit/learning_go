@@ -8,7 +8,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func VerifyUserCredentials(username, passwordHash string) bool {
+func VerifyUserCredentials(username, password string) bool {
 	var storedHash string
 
 	query := `
@@ -25,8 +25,10 @@ func VerifyUserCredentials(username, passwordHash string) bool {
 		return false // other DB error
 	}
 
+	fmt.Println(storedHash)
+
 	// Compare provided password with stored hash
-	if err := bcrypt.CompareHashAndPassword([]byte(storedHash), []byte(passwordHash)); err != nil {
+	if err := bcrypt.CompareHashAndPassword([]byte(storedHash), []byte(password)); err != nil {
 		log.Println("invalid password")
 		return false
 	}
