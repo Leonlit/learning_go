@@ -1,0 +1,60 @@
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    username TEXT NOT NULL,
+    created_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    password_hash TEXT NOT NULL
+);
+
+CREATE TABLE scans (
+    id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(id),
+    scan_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    hosts_up INT,
+    hosts_down INT,
+    total_hosts INT
+);
+
+CREATE TYPE host_status AS ENUM ('up', 'down');
+
+CREATE TABLE hosts (
+    id SERIAL PRIMARY KEY,
+    scan_id INT REFERENCES scans(id) ON DELETE CASCADE,
+    ip_address VARCHAR(45),
+    addr_type VARCHAR(10),
+    hostname TEXT,
+    status host_status DEFAULT 'up'
+);
+
+CREATE TYPE port_protocol AS ENUM ('tcp', 'udp');
+CREATE TYPE port_state AS ENUM ('open', 'closed', 'filtered');
+
+CREATE TABLE ports (
+    id SERIAL PRIMARY KEY,
+    host_id INT REFERENCES hosts(id) ON DELETE CASCADE,
+    port_number INT,
+    protocol port_protocol,
+    state port_state
+);
+
+CREATE TABLE services (
+    id SERIAL PRIMARY KEY,
+    port_id INT REFERENCES ports(id) ON DELETE CASCADE,
+    service_name TEXT,
+    service_product TEXT,
+    service_version TEXT,
+    service_fp TEXT
+);
+
+CREATE TABLE scripts (
+    id SERIAL PRIMARY KEY,
+    port_id INT REFERENCES ports(id) ON DELETE CASCADE,
+    script_id TEXT,
+    script_output TEXT
+);
+
+CREATE TABLE scriptsElement (
+    id SERIAL PRIMARY KEY,
+    script_id INT REFERENCES scripts(id) ON DELETE CASCADE,
+    elem_key TEXT,
+    elem_value TEXT
+);

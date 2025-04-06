@@ -1,13 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
-	"nmapManagement/nmapWebUI/databases"
+	"nmapManagement/nmapWebUI/logs"
 	"nmapManagement/nmapWebUI/routes"
-	"nmapManagement/nmapWebUI/utils"
-	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -26,25 +23,7 @@ func enableCORS(next http.Handler) http.Handler {
 }
 
 func main() {
-	dbPort, err := strconv.Atoi(utils.LoadEnv("DB_PORT"))
-	if err != nil {
-		log.Fatalf("Invalid DB port number: %v", err)
-	}
-
-	dbConfig := databases.DBConfig{
-		Host:     utils.LoadEnv("DB_HOST"),
-		Port:     dbPort,
-		User:     utils.LoadEnv("DB_USER"),
-		Password: utils.LoadEnv("DB_PASS"),
-		DBName:   utils.LoadEnv("DB_NAME"),
-		SSLMode:  "disable", // Use "require" for production
-	}
-
-	db, err := databases.NewDB(dbConfig)
-	if err != nil {
-		log.Fatalf("Failed to connect to the database: %v", err)
-	}
-	defer db.Close()
+	logs.InitLogs()
 
 	router := mux.NewRouter()
 
@@ -55,7 +34,7 @@ func main() {
 	routes.RegisterScanRoutes(router)
 	routes.RegisterHostRoutes(router)
 
-	fmt.Println("Using port 8080")
-	fmt.Println("Server running on: http://localhost:8080")
+	log.Println("Using port 8080")
+	log.Println("Server running on: http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", corsRouter))
 }

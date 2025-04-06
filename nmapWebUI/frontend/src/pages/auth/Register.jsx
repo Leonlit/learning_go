@@ -1,17 +1,19 @@
 import React, { useState } from "react";
-import "./App.css";
+import { useNavigate } from "react-router-dom";
+import "../../css/App.css";
 
-const App = () => {
-	// States to manage form inputs
-	const [username, setUsername] = useState("");
-	const [password, setPassword] = useState("");
-	const [error] = useState("");
+function RegisterPage () {
+    const navigate = useNavigate();
 
-	// Handle form submission
-	const HandleSubmit = (e) => {
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [repeatPassword, setRepeatPassword] = useState("");
+    const [error] = useState("");
+
+    const HandleSubmit = (e) => {
 		e.preventDefault();
 
-		fetch('http://localhost:8080/login', {
+		fetch('http://localhost:8080/register', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -33,7 +35,7 @@ const App = () => {
 		});
 	};
 
-	return (
+    return  (
 		<div className="login-container">
 			<h1>Nmap Management</h1><br />
 			<h2>Login</h2>
@@ -58,11 +60,27 @@ const App = () => {
 						required
 					/>
 				</div>
+                <div className="input-group">
+					<label htmlFor="repeatPassword">Repeat Password:</label>
+					<input
+						type="password"
+						id="repeatPassword"
+						value={repeatPassword}
+						onChange={(e) => setRepeatPassword(e.target.value)}
+						required
+					/>
+				</div>
 				{error && <p className="error">{error}</p>}
-				<button type="submit" className="submit-btn">Login</button>
+				<button type="submit" className="submit-btn">Register</button>
+				<button 
+					type="button"
+					className="submit-btn"
+					onClick={() => navigate("/")}
+				>
+				Back to Login
+				</button>
 			</form>
 		</div>
 	);
-};
-
-export default App;
+}
+export default RegisterPage;
