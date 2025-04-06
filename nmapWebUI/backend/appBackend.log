@@ -1,2 +1,29 @@
-2025/04/06 12:24:02 main.go:37: Using port 8080
-2025/04/06 12:24:02 main.go:38: Server running on: http://localhost:8080
+2025/04/06 15:11:19 connectDB.go:66: Successfully connected to the database
+2025/04/06 15:11:19 connectDB.go:45: Connected to DB
+2025/04/06 15:11:19 main.go:41: Using port 8080
+2025/04/06 15:11:19 main.go:42: Server running on: http://localhost:8080
+2025/04/06 15:11:30 usersdb.go:23: sql: database is closed
+2025/04/06 15:11:45 connectDB.go:66: Successfully connected to the database
+2025/04/06 15:11:45 connectDB.go:45: Connected to DB
+2025/04/06 15:11:45 main.go:41: Using port 8080
+2025/04/06 15:11:45 main.go:42: Server running on: http://localhost:8080
+2025/04/06 15:11:48 usersdb.go:23: sql: database is closed
+2025/04/06 15:12:03 usersdb.go:48: sql: database is closed
+2025/04/06 15:12:38 connectDB.go:66: Successfully connected to the database
+2025/04/06 15:12:38 connectDB.go:45: Connected to DB
+2025/04/06 15:12:38 main.go:41: Using port 8080
+2025/04/06 15:12:38 main.go:42: Server running on: http://localhost:8080
+2025/04/06 15:12:45 authHandler.go:130: No DB entry created! Did not register new user!
+2025/04/06 15:15:29 connectDB.go:66: Successfully connected to the database
+2025/04/06 15:15:29 connectDB.go:45: Connected to DB
+2025/04/06 15:15:29 main.go:41: Using port 8080
+2025/04/06 15:15:29 main.go:42: Server running on: http://localhost:8080
+2025/04/06 15:15:56 authHandler.go:130: No DB entry created! Did not register new user!
+2025/04/06 15:17:43 connectDB.go:66: Successfully connected to the database
+2025/04/06 15:17:43 connectDB.go:45: Connected to DB
+2025/04/06 15:17:43 main.go:41: Using port 8080
+2025/04/06 15:17:43 main.go:42: Server running on: http://localhost:8080
+2025/04/06 15:20:34 connectDB.go:66: Successfully connected to the database
+2025/04/06 15:20:34 connectDB.go:45: Connected to DB
+2025/04/06 15:20:34 main.go:41: Using port 8080
+2025/04/06 15:20:34 main.go:42: Server running on: http://localhost:8080

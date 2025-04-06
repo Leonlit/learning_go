@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"nmapManagement/nmapWebUI/databases"
 	"nmapManagement/nmapWebUI/logs"
 	"nmapManagement/nmapWebUI/routes"
 
@@ -14,16 +15,19 @@ func enableCORS(next http.Handler) http.Handler {
 		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173") // Vite uses 5173
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
 		if r.Method == "OPTIONS" {
 			w.WriteHeader(http.StatusOK)
 			return
 		}
+
 		next.ServeHTTP(w, r)
 	})
 }
 
 func main() {
 	logs.InitLogs()
+	databases.InitDB()
 
 	router := mux.NewRouter()
 

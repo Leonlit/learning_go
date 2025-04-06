@@ -4,12 +4,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"nmapManagement/nmapWebUI/databases"
 	"nmapManagement/nmapWebUI/utils"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type Claims struct {
@@ -19,6 +21,16 @@ type Claims struct {
 
 var secretKey = utils.LoadEnv("JWT_SECRET_KEY")
 
+func hashPassword(password string) (string, error) {
+	// Generate a hashed password with bcrypt
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		log.Printf("failed to hash password: %v", err)
+		return "", fmt.Errorf("failed to hash password: %v", err)
+	}
+	return string(hashedPassword), nil
+}
+
 // Handle login operation
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	var user map[string]string
@@ -26,6 +38,8 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	// Parse the login credentials from the request body
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
+		log.Println("Invalid request body!")
+		log.Println(err)
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
@@ -33,16 +47,23 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	username := user["username"]
 	password := user["password"]
 
-	fmt.Print("Loging in user")
+	fmt.Println("Loging in user")
+
+	passwordHash, err := hashPassword(password)
+
+	if err != nil {
+		http.Error(w, "Unexpected Error!", http.StatusBadRequest)
+		return
+	}
 
 	// Validate user credentials (e.g., check against a database)
-	if !databases.VerifyUserCredentials(username, password) {
+	if !databases.VerifyUserCredentials(username, passwordHash) {
 		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
 		return
 	}
 
 	// Generate JWT token
-	token, err := GenerateJWT(username)
+	token, err := generateJWT(username)
 	if err != nil {
 		http.Error(w, "Error generating token", http.StatusInternalServerError)
 		return
@@ -59,10 +80,62 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
-	// register user
+	var user map[string]string
+
+	// Parse the login credentials from the request body
+	err := json.NewDecoder(r.Body).Decode(&user)
+	if err != nil {
+		log.Println("Invalid request body!")
+		log.Println(err)
+		http.Error(w, "Invalid request body!", http.StatusBadRequest)
+		return
+	}
+
+	username := user["username"]
+	password := user["password"]
+	repeatPassword := user["repeatPassword"]
+
+	if repeatPassword != password {
+		http.Error(w, "Different password used!", http.StatusBadRequest)
+		return
+	}
+
+	userExists, err := databases.CheckUsernameExists(username)
+
+	if err != nil {
+		http.Error(w, "Unexpected Error!", http.StatusInternalServerError)
+		return
+	}
+
+	if userExists {
+		http.Error(w, "Invalid request body!", http.StatusBadRequest)
+		return
+	}
+
+	passwordHash, err := hashPassword(password)
+
+	if err != nil {
+		http.Error(w, "Unexpected Error!", http.StatusInternalServerError)
+		return
+	}
+
+	created, err := databases.CreateNewUser(username, passwordHash)
+
+	if err != nil {
+		http.Error(w, "Unexpected Error!", http.StatusInternalServerError)
+		return
+	}
+
+	if created == 0 {
+		log.Println("No DB entry created! Did not register new user!")
+		http.Error(w, "Unexpected Error!", http.StatusInternalServerError)
+		return
+	}
+
+	utils.SendJSONResponse(w, "User registered successfully", http.StatusCreated)
 }
 
-func GenerateJWT(username string) (string, error) {
+func generateJWT(username string) (string, error) {
 	claims := Claims{
 		Username: username,
 		RegisteredClaims: jwt.RegisteredClaims{
@@ -85,6 +158,8 @@ func ParseJWT(tokenString string) (*Claims, error) {
 	})
 
 	if err != nil {
+		log.Println("Error parsing JWT!")
+		log.Println(err)
 		return nil, err
 	}
 

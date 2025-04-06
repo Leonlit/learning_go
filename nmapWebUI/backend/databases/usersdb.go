@@ -2,12 +2,13 @@ package databases
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
-func VerifyUserCredentials(username, password string) bool {
+func VerifyUserCredentials(username, passwordHash string) bool {
 	var storedHash string
 
 	query := `
@@ -25,12 +26,32 @@ func VerifyUserCredentials(username, password string) bool {
 	}
 
 	// Compare provided password with stored hash
-	if err := bcrypt.CompareHashAndPassword([]byte(storedHash), []byte(password)); err != nil {
+	if err := bcrypt.CompareHashAndPassword([]byte(storedHash), []byte(passwordHash)); err != nil {
 		log.Println("invalid password")
 		return false
 	}
 
 	return true // success
+}
+
+func CheckUsernameExists(username string) (bool, error) {
+	// Prepare a SQL query to check if the username exists
+	query := "SELECT COUNT(*) FROM users WHERE username = $1"
+
+	// Execute the query and scan the result into a variable
+	var count int
+	err := DBObj.QueryRow(query, username).Scan(&count)
+	if err != nil {
+		// Return false and the error if the query failed
+		if err == sql.ErrNoRows {
+			return false, err // No rows means the username doesn't exist
+		}
+		log.Println(err)
+		return false, err
+	}
+
+	// If count > 0, the username exists
+	return count > 0, err
 }
 
 func CreateNewUser(username, passwordHash string) (int, error) {
@@ -41,6 +62,7 @@ func CreateNewUser(username, passwordHash string) (int, error) {
         RETURNING id
     `
 	err := DBObj.QueryRow(query, username, passwordHash).Scan(&userID)
+	fmt.Println(userID)
 	if err != nil {
 		log.Println("Error when creating user entry.")
 		log.Println(err)
