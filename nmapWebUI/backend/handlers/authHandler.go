@@ -130,7 +130,7 @@ func RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if created == 0 {
+	if created == "" {
 		log.Println("No DB entry created! Did not register new user!")
 		http.Error(w, "Unexpected Error!", http.StatusInternalServerError)
 		return

@@ -57,7 +57,7 @@ func CheckUsernameExists(username string) (bool, error) {
 
 func GetUserUUID(username string) (string, error) {
 	// Prepare a SQL query to check if the username exists
-	query := "SELECT uuid FROM users WHERE username = $1"
+	query := "SELECT user_uuid FROM users WHERE username = $1"
 
 	// Execute the query and scan the result into a variable
 	var uuid string
@@ -73,19 +73,19 @@ func GetUserUUID(username string) (string, error) {
 	return uuid, err
 }
 
-func CreateNewUser(username, passwordHash string) (int, error) {
-	var userUUID int
+func CreateNewUser(username, passwordHash string) (string, error) {
+	var userUUID string
 	query := `
-        INSERT INTO users (username, password_hash, uuid)
-        VALUES ($1, $2, uuid())
-        RETURNING uuid
+        INSERT INTO users (username, password_hash, user_uuid)
+        VALUES ($1, $2, uuid_generate_v4())
+        RETURNING user_uuid
     `
 	err := DBObj.QueryRow(query, username, passwordHash).Scan(&userUUID)
 	fmt.Println(userUUID)
 	if err != nil {
 		log.Println("Error when creating user entry.")
 		log.Println(err)
-		return 0, err
+		return "", err
 	}
 	return userUUID, nil
 }
