@@ -14,7 +14,6 @@ func VerifyUserCredentials(username, password string) bool {
 	query := `
 		SELECT password_hash FROM users WHERE username = $1
 	`
-
 	err := DBObj.QueryRow(query, username).Scan(&storedHash)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -56,19 +55,37 @@ func CheckUsernameExists(username string) (bool, error) {
 	return count > 0, err
 }
 
+func GetUserUUID(username string) (string, error) {
+	// Prepare a SQL query to check if the username exists
+	query := "SELECT uuid FROM users WHERE username = $1"
+
+	// Execute the query and scan the result into a variable
+	var uuid string
+	err := DBObj.QueryRow(query, username).Scan(&uuid)
+	if err != nil {
+		// Return false and the error if the query failed
+		if err == sql.ErrNoRows {
+			return "", err // No rows means the username doesn't exist
+		}
+		log.Println(err)
+		return "", err
+	}
+	return uuid, err
+}
+
 func CreateNewUser(username, passwordHash string) (int, error) {
-	var userID int
+	var userUUID int
 	query := `
-        INSERT INTO users (username, password_hash)
-        VALUES ($1, $2)
-        RETURNING id
+        INSERT INTO users (username, password_hash, uuid)
+        VALUES ($1, $2, uuid())
+        RETURNING uuid
     `
-	err := DBObj.QueryRow(query, username, passwordHash).Scan(&userID)
-	fmt.Println(userID)
+	err := DBObj.QueryRow(query, username, passwordHash).Scan(&userUUID)
+	fmt.Println(userUUID)
 	if err != nil {
 		log.Println("Error when creating user entry.")
 		log.Println(err)
 		return 0, err
 	}
-	return userID, nil
+	return userUUID, nil
 }

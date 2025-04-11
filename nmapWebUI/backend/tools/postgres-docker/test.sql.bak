@@ -1,44 +1,63 @@
 CREATE TABLE users (
-    id SERIAL PRIMARY KEY,
+    user_uuid UUID NOT NULL PRIMARY KEY,
     username TEXT NOT NULL,
     created_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     password_hash TEXT NOT NULL
 );
 
 CREATE TABLE scans (
-    id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES users(id),
+    scan_uuid UUID NOT NULL PRIMARY KEY,
+    user_uuid UUID NOT NULL REFERENCES users(user_uuid),
     scan_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     hosts_up INT,
     hosts_down INT,
     total_hosts INT
 );
 
-CREATE TYPE host_status AS ENUM ('up', 'down');
+DO $$
+BEGIN
+    -- Check if the type 'host_status' exists
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'host_status') THEN
+        CREATE TYPE host_status AS ENUM ('up', 'down');
+    END IF;
+END $$;
 
 CREATE TABLE hosts (
-    id SERIAL PRIMARY KEY,
-    scan_id INT REFERENCES scans(id) ON DELETE CASCADE,
+    host_uuid UUID NOT NULL PRIMARY KEY,
+    scan_uuid UUID NOT NULL REFERENCES scans(scan_uuid) ON DELETE CASCADE,
     ip_address VARCHAR(45),
     addr_type VARCHAR(10),
     hostname TEXT,
     status host_status DEFAULT 'up'
 );
 
-CREATE TYPE port_protocol AS ENUM ('tcp', 'udp');
-CREATE TYPE port_state AS ENUM ('open', 'closed', 'filtered');
+-- Create port_protocol enum type if it doesn't exist
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'port_protocol') THEN
+        CREATE TYPE port_protocol AS ENUM ('tcp', 'udp');
+    END IF;
+END $$;
+
+-- Create port_state enum type if it doesn't exist
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'port_state') THEN
+        CREATE TYPE port_state AS ENUM ('open', 'closed', 'filtered');
+    END IF;
+END $$;
 
 CREATE TABLE ports (
-    id SERIAL PRIMARY KEY,
-    host_id INT REFERENCES hosts(id) ON DELETE CASCADE,
+    port_uuid UUID NOT NULL PRIMARY KEY,
+    host_uuid UUID NOT NULL REFERENCES hosts(host_uuid) ON DELETE CASCADE,
     port_number INT,
     protocol port_protocol,
     state port_state
 );
 
 CREATE TABLE services (
-    id SERIAL PRIMARY KEY,
-    port_id INT REFERENCES ports(id) ON DELETE CASCADE,
+    service_uuid UUID NOT NULL PRIMARY KEY,
+    port_uuid UUID NOT NULL REFERENCES ports(port_uuid) ON DELETE CASCADE,
     service_name TEXT,
     service_product TEXT,
     service_version TEXT,
@@ -46,15 +65,15 @@ CREATE TABLE services (
 );
 
 CREATE TABLE scripts (
-    id SERIAL PRIMARY KEY,
-    port_id INT REFERENCES ports(id) ON DELETE CASCADE,
+    script_uuid UUID NOT NULL PRIMARY KEY,
+    port_uuid UUID NOT NULL REFERENCES ports(port_uuid) ON DELETE CASCADE,
     script_id TEXT,
     script_output TEXT
 );
 
-CREATE TABLE scriptsElement (
-    id SERIAL PRIMARY KEY,
-    script_id INT REFERENCES scripts(id) ON DELETE CASCADE,
+CREATE TABLE scripts_element (
+    script_element_uuid UUID NOT NULL PRIMARY KEY,
+    script_uuid UUID NOT NULL REFERENCES scripts(script_uuid) ON DELETE CASCADE,
     elem_key TEXT,
     elem_value TEXT
 );

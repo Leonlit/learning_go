@@ -74,3 +74,9 @@
 2025/04/11 13:38:37 connectDB.go:45: Connected to DB
 2025/04/11 13:38:37 main.go:41: Using port 8080
 2025/04/11 13:38:37 main.go:42: Server running on: http://localhost:8080
+2025/04/11 20:07:50 connectDB.go:66: Successfully connected to the database
+2025/04/11 20:07:50 connectDB.go:45: Connected to DB
+2025/04/11 20:07:50 main.go:41: Using port 8080
+2025/04/11 20:07:50 main.go:42: Server running on: http://localhost:8080
+2025/04/11 20:07:54 usersdb.go:86: Error when creating user entry.
+2025/04/11 20:07:54 usersdb.go:87: pq: function uuid() does not exist

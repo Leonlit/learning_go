@@ -15,7 +15,7 @@ import (
 )
 
 type Claims struct {
-	Username string `json:"username"`
+	UserUUID string
 	jwt.RegisteredClaims
 }
 
@@ -55,8 +55,16 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	uuid, err := databases.GetUserUUID(username)
+	if err != nil {
+		log.Println("Error generating token!")
+		log.Println(err)
+		http.Error(w, "Error generating token", http.StatusInternalServerError)
+		return
+	}
+
 	// Generate JWT token
-	token, err := generateJWT(username)
+	token, err := generateJWT(uuid)
 	if err != nil {
 		log.Println("Error generating token!")
 		log.Println(err)
@@ -131,9 +139,9 @@ func RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
 	utils.SendJSONResponse(w, "User registered successfully", http.StatusCreated)
 }
 
-func generateJWT(username string) (string, error) {
+func generateJWT(uuid string) (string, error) {
 	claims := Claims{
-		Username: username,
+		UserUUID: uuid,
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    "nmap-management",
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(8 * time.Hour)), // Expiry set to 8 hour
