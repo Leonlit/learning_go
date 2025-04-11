@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strings"
 )
 
 type Response struct {
@@ -29,4 +30,16 @@ func SendJSONResponse(w http.ResponseWriter, message string, status int) {
 		http.Error(w, "Unable to encode response", http.StatusInternalServerError)
 		return
 	}
+}
+
+func GetJWTAuthHeaderString(w http.ResponseWriter, r *http.Request) string {
+	authHeader := r.Header.Get("Authorization")
+	if authHeader == "" {
+		http.Error(w, "Authorization header missing", http.StatusUnauthorized)
+		return ""
+	}
+
+	// Token is passed as "Bearer <token>"
+	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+	return tokenString
 }
