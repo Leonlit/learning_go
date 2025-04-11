@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../../css/App.css";
+import HeadMetadata from "../../components/heads/headMetadata";
 
 function RegisterPage () {
     const navigate = useNavigate();
@@ -39,51 +40,54 @@ function RegisterPage () {
 	};
 
     return  (
-		<div className="login-container">
-			<h1>Nmap Management</h1><br />
-			<h2>Login</h2>
-			<form onSubmit={HandleSubmit} className="login-form">
-				<div className="input-group">
-					<label htmlFor="username">Username:</label>
-					<input
-						type="text"
-						id="username"
-						value={username}
-						onChange={(e) => setUsername(e.target.value)}
-						required
-					/>
-				</div>
-				<div className="input-group">
-					<label htmlFor="password">Password:</label>
-					<input
-						type="password"
-						id="password"
-						value={password}
-						onChange={(e) => setPassword(e.target.value)}
-						required
-					/>
-				</div>
-                <div className="input-group">
-					<label htmlFor="repeatPassword">Repeat Password:</label>
-					<input
-						type="password"
-						id="repeatPassword"
-						value={repeatPassword}
-						onChange={(e) => setRepeatPassword(e.target.value)}
-						required
-					/>
-				</div>
-				{error && <p className="error">{error}</p>}
-				<button type="submit" className="submit-btn">Register</button>
-				<button 
-					type="button"
-					className="submit-btn"
-					onClick={() => navigate("/")}
-				>
-				Back to Login
-				</button>
-			</form>
-		</div>
+		<>
+			<HeadMetadata title={"Register"}/>
+			<div className="login-container">
+				<h1>Nmap Management</h1><br />
+				<h2>Login</h2>
+				<form onSubmit={HandleSubmit} className="login-form">
+					<div className="input-group">
+						<label htmlFor="username">Username:</label>
+						<input
+							type="text"
+							id="username"
+							value={username}
+							onChange={(e) => setUsername(e.target.value)}
+							required
+						/>
+					</div>
+					<div className="input-group">
+						<label htmlFor="password">Password:</label>
+						<input
+							type="password"
+							id="password"
+							value={password}
+							onChange={(e) => setPassword(e.target.value)}
+							required
+						/>
+					</div>
+					<div className="input-group">
+						<label htmlFor="repeatPassword">Repeat Password:</label>
+						<input
+							type="password"
+							id="repeatPassword"
+							value={repeatPassword}
+							onChange={(e) => setRepeatPassword(e.target.value)}
+							required
+						/>
+					</div>
+					{error && <p className="error">{error}</p>}
+					<button type="submit" className="submit-btn">Register</button>
+					<button 
+						type="button"
+						className="submit-btn"
+						onClick={() => navigate("/login")}
+					>
+					Back to Login
+					</button>
+				</form>
+			</div>
+		</>
 	);
 }
 export default RegisterPage;
