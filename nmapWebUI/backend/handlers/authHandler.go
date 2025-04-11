@@ -166,3 +166,8 @@ func ParseJWT(tokenString string) (*Claims, error) {
 
 	return nil, errors.New("invalid token")
 }
+
+func AuthMe(w http.ResponseWriter, r *http.Request) {
+	// If we're here, middleware already validated the token
+	w.WriteHeader(http.StatusOK)
+}

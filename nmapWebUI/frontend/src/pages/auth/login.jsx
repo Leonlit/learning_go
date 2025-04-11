@@ -29,6 +29,7 @@ const LoginPage = () => {
 		})
 		.then((data) => {
 			console.log(data);
+			navigate("/users/dashboard")
 			// You can add a success state or redirect after successful login
 		})
 		.catch((error) => {

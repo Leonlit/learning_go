@@ -11,7 +11,7 @@ func RegisterScanRoutes(router *mux.Router) {
 	subRoute := router.PathPrefix("/scans").Subrouter()
 	subRoute.Use(middlewares.AuthenticateJWT)
 
-	subRoute.HandleFunc("/", handlers.GetScans).Methods("GET")
+	subRoute.HandleFunc("/list/{page}", handlers.GetScansList).Methods("GET")
 	subRoute.HandleFunc("/{id}", handlers.GetScanByID).Methods("GET")
 	subRoute.HandleFunc("/upload", handlers.UploadScan).Methods("POST")
 }
