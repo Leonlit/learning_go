@@ -182,3 +182,19 @@ func AuthMe(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusOK)
 }
+
+func HandleLogout(w http.ResponseWriter, r *http.Request) {
+	// Remove the JWT by setting the cookie with the same name and an expired date
+	http.SetCookie(w, &http.Cookie{
+		Name:     "auth_token",         // Same name as the cookie you set
+		Value:    "",                   // Empty value
+		Expires:  time.Unix(0, 0),      // Expire date in the past
+		HttpOnly: true,                 // Make it HttpOnly for security
+		Secure:   false,                // Set to true for HTTPS (secure flag)
+		Path:     "/",                  // Same path as where it was originally set
+		SameSite: http.SameSiteLaxMode, // Ensure it works cross-site if needed
+	})
+
+	// Optionally, you can also redirect or send a response back to the client
+	http.Redirect(w, r, "/login", http.StatusFound)
+}

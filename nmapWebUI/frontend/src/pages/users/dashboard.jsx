@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import HeadMetadata from "../../components/heads/headMetadata";
+import ProtectedLayout from "../../components/layouts/protectedLayout";
 
 const Dashboard = () => {
 	const [scans, setScans] = useState([]);
@@ -33,33 +34,38 @@ const Dashboard = () => {
 	if (error) return <p className="error">{error}</p>;
 
 	return (
-		<>
-			<HeadMetadata />
+		<ProtectedLayout>
+			<HeadMetadata title={"Dashboard"}/>
 			<div className="dashboard">
 				<h2>Scan Dashboard</h2>
-				<table className="scan-table">
-					<thead>
-						<tr>
-							<th>ID</th>
-							<th>Scan Name</th>
-							<th>Status</th>
-							<th>Date</th>
-						</tr>
-					</thead>
-					<tbody>
-						{scans.map((scan) => (
-							<tr key={scan.scan_uuid}>
-								<td>{scan.scan_uuid}</td>
-								<td>{scan.total_hosts}</td>
-								<td>{scan.hosts_up}</td>
-								<td>{scan.hosts_down}</td>
-								<td>{new Date(scan.scan_time).toLocaleString()}</td>
+				{!scans || scans.length === 0 ? (
+					<p>No data in database.</p>
+				) : (
+					<table className="scan-table">
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>Scan Name</th>
+								<th>Status</th>
+								<th>Hosts Down</th>
+								<th>Date</th>
 							</tr>
-						))}
-					</tbody>
-				</table>
+						</thead>
+						<tbody>
+							{scans.map((scan) => (
+								<tr key={scan.scan_uuid}>
+									<td>{scan.scan_uuid}</td>
+									<td>{scan.total_hosts}</td>
+									<td>{scan.hosts_up}</td>
+									<td>{scan.hosts_down}</td>
+									<td>{new Date(scan.scan_time).toLocaleString()}</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				)}
 			</div>
-		</>
+		</ProtectedLayout>
 	);
 };
 

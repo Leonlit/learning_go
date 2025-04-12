@@ -2,7 +2,6 @@ package middlewares
 
 import (
 	"context"
-	"log"
 	"net/http"
 	"nmapManagement/nmapWebUI/handlers"
 	"nmapManagement/nmapWebUI/utils"
@@ -14,7 +13,6 @@ func AuthenticateJWT(next http.Handler) http.Handler {
 		// Get token from the Authorization header
 
 		tokenString := utils.GetJWTFromCookie(w, r)
-		log.Println(tokenString)
 
 		if tokenString == "" {
 			return

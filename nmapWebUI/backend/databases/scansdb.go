@@ -14,12 +14,12 @@ type Scan struct {
 	TotalHosts int       `json:"total_hosts"`
 }
 
-func GetScanList(userID string, page int) ([]Scan, error) {
+func GetScanList(userUUID string, page int) ([]Scan, error) {
 	offset := (page - 1) * 10
 	query := `
-		SELECT * FROM scans WHERE user_id = $1 LIMIT 10 OFFSET $2
+		SELECT * FROM scans WHERE user_uuid = $1 LIMIT 10 OFFSET $2
 	`
-	rows, err := DBObj.Query(query, userID, offset)
+	rows, err := DBObj.Query(query, userUUID, offset)
 	if err != nil {
 		log.Println("Query error:", err)
 		return nil, err
