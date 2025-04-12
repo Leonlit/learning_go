@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"strings"
 )
 
 type Response struct {
@@ -32,14 +31,12 @@ func SendJSONResponse(w http.ResponseWriter, message string, status int) {
 	}
 }
 
-func GetJWTAuthHeaderString(w http.ResponseWriter, r *http.Request) string {
-	authHeader := r.Header.Get("Authorization")
-	if authHeader == "" {
-		http.Error(w, "Authorization header missing", http.StatusUnauthorized)
+func GetJWTFromCookie(w http.ResponseWriter, r *http.Request) string {
+	cookie, err := r.Cookie("auth_token")
+	if err != nil {
+		http.Error(w, "auth_token cookie missing", http.StatusUnauthorized)
 		return ""
 	}
 
-	// Token is passed as "Bearer <token>"
-	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
-	return tokenString
+	return cookie.Value
 }

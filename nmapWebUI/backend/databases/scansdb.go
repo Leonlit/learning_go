@@ -6,8 +6,8 @@ import (
 )
 
 type Scan struct {
-	ID         int       `json:"id"`
-	UserID     int       `json:"user_id"`
+	ScanUUID   int       `json:"scan_uuid"`
+	UserUUID   int       `json:"user_uuid"`
 	ScanTime   time.Time `json:"scan_time"`
 	HostsUp    int       `json:"hosts_up"`
 	HostsDown  int       `json:"hosts_down"`
@@ -28,7 +28,7 @@ func GetScanList(userID string, page int) ([]Scan, error) {
 	var scans []Scan
 	for rows.Next() {
 		var scan Scan
-		if err := rows.Scan(&scan.ID, &scan.UserID, &scan.ScanTime, &scan.HostsUp, &scan.HostsDown, &scan.TotalHosts); err != nil {
+		if err := rows.Scan(&scan.ScanUUID, &scan.UserUUID, &scan.ScanTime, &scan.HostsUp, &scan.HostsDown, &scan.TotalHosts); err != nil {
 			return nil, err
 		}
 		scans = append(scans, scan)

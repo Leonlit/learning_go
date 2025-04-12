@@ -9,7 +9,7 @@ const Dashboard = () => {
 	useEffect(() => {
 		const fetchScans = async () => {
 			try {
-				const res = await fetch("/api/scans/", {
+				const res = await fetch("http://localhost:8080/scans/list/1", {
 					credentials: "include", // Send JWT cookie
 				});
 
@@ -48,11 +48,12 @@ const Dashboard = () => {
 					</thead>
 					<tbody>
 						{scans.map((scan) => (
-							<tr key={scan.id}>
-								<td>{scan.id}</td>
-								<td>{scan.name}</td>
-								<td>{scan.status}</td>
-								<td>{new Date(scan.createdAt).toLocaleString()}</td>
+							<tr key={scan.scan_uuid}>
+								<td>{scan.scan_uuid}</td>
+								<td>{scan.total_hosts}</td>
+								<td>{scan.hosts_up}</td>
+								<td>{scan.hosts_down}</td>
+								<td>{new Date(scan.scan_time).toLocaleString()}</td>
 							</tr>
 						))}
 					</tbody>

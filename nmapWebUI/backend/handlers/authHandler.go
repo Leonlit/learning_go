@@ -78,7 +78,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		HttpOnly: true,
 		Secure:   false, // Only for HTTPS //TODO: Turn on cookies Secure flag during prods
 		Path:     "/",
-		SameSite: http.SameSiteStrictMode,
+		SameSite: http.SameSiteLaxMode,
 	})
 	utils.SendJSONResponse(w, "User valid", http.StatusOK)
 }
@@ -158,7 +158,7 @@ func ParseJWT(tokenString string) (*Claims, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("unexpected signing method")
 		}
-		return secretKey, nil
+		return []byte(secretKey), nil
 	})
 
 	if err != nil {
@@ -177,5 +177,8 @@ func ParseJWT(tokenString string) (*Claims, error) {
 
 func AuthMe(w http.ResponseWriter, r *http.Request) {
 	// If we're here, middleware already validated the token
+	for _, c := range r.Cookies() {
+		fmt.Printf("Cookie: %s=%s\n", c.Name, c.Value)
+	}
 	w.WriteHeader(http.StatusOK)
 }

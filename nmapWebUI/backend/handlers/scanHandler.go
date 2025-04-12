@@ -23,6 +23,9 @@ func GetScansList(w http.ResponseWriter, r *http.Request) {
 
 	userUUID := r.Context().Value("UserUUID").(string)
 
+	log.Println("test")
+	log.Println(userUUID)
+
 	scans, err := databases.GetScanList(userUUID, page)
 	if err != nil {
 		http.Error(w, "Error fetching scans", http.StatusInternalServerError)
