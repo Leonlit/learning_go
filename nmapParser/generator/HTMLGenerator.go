@@ -2,8 +2,8 @@ package generator
 
 import (
 	"fmt"
+	"gulnManagement/nmapParser/parser"
 	"html/template"
-	"nmapManagement/nmapParser/parser"
 	"os"
 	"path/filepath"
 	"runtime"
