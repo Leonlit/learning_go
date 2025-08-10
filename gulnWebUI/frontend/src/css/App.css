@@ -125,7 +125,8 @@ input {
 }
 
 .header-nav a,
-.header-nav button {
+.header-nav button,
+.sidebar a {
 	color: white;
 	background: transparent;
 	border: none;

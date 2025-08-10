@@ -11,7 +11,7 @@ const ProtectedLayout = ({ children }) => {
 
 			<div className="main-content">
 				<aside className="sidebar"> {/* Placeholder for Sidebar */}
-					<p>Sidebar</p>
+					<p><a href="/users/scanUpload">Upload Scan</a></p>
 				</aside>
 
 				<main className="content-area">

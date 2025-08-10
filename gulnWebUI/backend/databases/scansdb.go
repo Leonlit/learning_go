@@ -6,12 +6,13 @@ import (
 )
 
 type Scan struct {
-	ScanUUID   int       `json:"scan_uuid"`
-	UserUUID   int       `json:"user_uuid"`
-	ScanTime   time.Time `json:"scan_time"`
-	HostsUp    int       `json:"hosts_up"`
-	HostsDown  int       `json:"hosts_down"`
-	TotalHosts int       `json:"total_hosts"`
+	ScanUUID         string    `json:"scan_uuid"`
+	UserUUID         string    `json:"user_uuid"`
+	ScanStartTime    time.Time `json:"scan_start_time"`
+	ScanFinishedTime time.Time `json:"scan_finish_time"`
+	HostsUp          int       `json:"hosts_up"`
+	HostsDown        int       `json:"hosts_down"`
+	TotalHosts       int       `json:"total_hosts"`
 }
 
 func GetScanList(userUUID string, page int) ([]Scan, error) {
@@ -28,7 +29,7 @@ func GetScanList(userUUID string, page int) ([]Scan, error) {
 	var scans []Scan
 	for rows.Next() {
 		var scan Scan
-		if err := rows.Scan(&scan.ScanUUID, &scan.UserUUID, &scan.ScanTime, &scan.HostsUp, &scan.HostsDown, &scan.TotalHosts); err != nil {
+		if err := rows.Scan(&scan.ScanUUID, &scan.UserUUID, &scan.ScanStartTime, &scan.ScanFinishedTime, &scan.HostsUp, &scan.HostsDown, &scan.TotalHosts); err != nil {
 			return nil, err
 		}
 		scans = append(scans, scan)

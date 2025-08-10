@@ -2,9 +2,12 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"gulnManagement/gulnWebUI/databases"
+	"gulnManagement/gulnWebUI/handlers/parser"
 	"log"
 	"net/http"
+	"path/filepath"
 	"strconv"
 
 	"github.com/gorilla/mux"
@@ -40,5 +43,43 @@ func GetScanByID(w http.ResponseWriter, r *http.Request) {
 }
 
 func UploadScan(w http.ResponseWriter, r *http.Request) {
-	// Insert new scan into DB
+	userUUID := r.Context().Value("UserUUID").(string)
+
+	r.Body = http.MaxBytesReader(w, r.Body, 10<<20) // 10 MB max, 10,485,760 bytes
+
+	// Parse multipart form
+	if err := r.ParseMultipartForm(10 << 20); err != nil {
+		http.Error(w, "File too big or bad request", http.StatusBadRequest)
+		return
+	}
+
+	// Get uploaded file
+	file, handler, err := r.FormFile("file")
+	if err != nil {
+		http.Error(w, "Error retrieving file", http.StatusBadRequest)
+		return
+	}
+	defer file.Close()
+
+	// Validate file type, XML
+	ext := filepath.Ext(handler.Filename)
+	if ext != ".xml" {
+		http.Error(w, "Invalid file type", http.StatusBadRequest)
+		return
+	}
+
+	nmapRun, err := parser.ParseNmap(file)
+
+	if err != nil {
+		http.Error(w, "Error Parsing Nmap results", http.StatusBadRequest)
+		return
+	}
+
+	saved := databases.SaveScanResultsToDatabase(userUUID, nmapRun)
+	if !saved {
+		http.Error(w, "Error Saving Nmap results", http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Fprintf(w, "File uploaded successfully: %s", file)
 }

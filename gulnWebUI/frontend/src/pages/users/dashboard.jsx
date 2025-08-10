@@ -48,7 +48,8 @@ const Dashboard = () => {
 								<th>Scan Name</th>
 								<th>Status</th>
 								<th>Hosts Down</th>
-								<th>Date</th>
+								<th>Start Date</th>
+								<th>Finish Date</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -58,7 +59,8 @@ const Dashboard = () => {
 									<td>{scan.total_hosts}</td>
 									<td>{scan.hosts_up}</td>
 									<td>{scan.hosts_down}</td>
-									<td>{new Date(scan.scan_time).toLocaleString()}</td>
+									<td>{new Date(scan.scan_start_time).toLocaleString()}</td>
+									<td>{new Date(scan.scan_finish_time).toLocaleString()}</td>
 								</tr>
 							))}
 						</tbody>

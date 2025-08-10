@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "../../../css/App.css";
 import HeadMetadata from "../../../components/heads/headMetadata";
+import ProtectedLayout from "../../../components/layouts/protectedLayout";
 
 const ScanUpload = () => {
 	const [file, setFile] = useState(null);
@@ -21,8 +22,9 @@ const ScanUpload = () => {
 		formData.append("file", file); // key name 'file' should match what your backend expects
 
 		try {
-			const response = await fetch("/api/upload", {
+			const response = await fetch("http://localhost:8080/scans/upload", {
 				method: "POST",
+				credentials: "include",
 				body: formData,
 			});
 
@@ -38,13 +40,13 @@ const ScanUpload = () => {
 	};
 
 	return (
-		<>
+		<ProtectedLayout>
 			<HeadMetadata title={"Scan Upload"}/>
 			<form onSubmit={handleSubmit}>
-				<input type="file" onChange={handleFileChange} />
+				<input type="file" onChange={handleFileChange} accept=".xml" />
 				<button type="submit">Upload</button>
 			</form>
-		</>
+		</ProtectedLayout>
 	);
 };
 

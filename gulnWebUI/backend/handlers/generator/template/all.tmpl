@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nmap Scan Results</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; text-align: left; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid black; padding: 8px; text-align: left; vertical-align: top; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+    <h1>Nmap Scan Results</h1>
+    <h2>Scan Summary</h2>
+    <p>Total Hosts: {{ .RunStats.Hosts.Total }}</p>
+    <p>Up: {{ .RunStats.Hosts.Up }} | Down: {{ .RunStats.Hosts.Down }}</p>
+    
+    <h2>Hosts</h2>
+    {{ range .TargetHosts }}
+        <h3>Host: {{ .HostIP.Addr }} ({{ .HostIP.AddrType }})</h3>
+        <p>Hostnames: 
+            {{ range .Hostname }}{{ .Name }} ({{ .Type }}) {{ end }}
+        </p>
+        <p>Open Ports [{{ .PortCount }}]: {{ range $index, $port := .Ports }}{{ if $index }}, {{ end }}{{ $port.ID }}{{ end }}</p>
+        <h4>Ports</h4>
+        <table>
+            <tr>
+                <th>Port</th>
+                <th>Protocol</th>
+                <th>State</th>
+                <th>Service</th>
+                <th>Version</th>
+                <th>Scripts</th>
+            </tr>
+            {{ range .Ports }}
+            <tr>
+                <td>{{ .ID }}</td>
+                <td>{{ .Protocol }}</td>
+                <td>{{ .State.State }} ({{ .State.Reason }})</td>
+                <td>{{ .Service.ServiceName }}</td>
+                <td>{{ if .Service.ServiceVersion }}{{ .Service.ServiceVersion }}{{ else }}N/A{{ end }}</td>
+                <td>
+                    {{ if .Scripts }}
+                        {{ range .Scripts }}
+                            <strong>{{ .Id }}</strong>: {{ .Output }}
+                            <br>
+                            {{ if .Elems }}
+                                <table>
+                                    <tr>
+                                        <th>Key</th>
+                                        <th>Value</th>
+                                    </tr>
+                                    {{ range .Elems }}
+                                        <tr>
+                                            <td>{{ if .Key }}{{ .Key }}{{ else }}N/A{{ end }}</td>
+                                            <td>{{ .Value }}</td>
+                                        </tr>
+                                    {{ end }}
+                                </table>
+                            {{ end }}
+                        {{ end }}
+                    {{ else }}
+                        N/A
+                    {{ end }}
+                </td>
+            </tr>
+            {{ end }}
+        </table>
+    {{ end }}
+</body>
+</html>

@@ -8,7 +8,8 @@ CREATE TABLE users (
 CREATE TABLE scans (
     scan_uuid UUID NOT NULL PRIMARY KEY,
     user_uuid UUID NOT NULL REFERENCES users(user_uuid),
-    scan_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    scan_start_time TIMESTAMP,
+    scan_finish_time TIMESTAMP,
     hosts_up INT,
     hosts_down INT,
     total_hosts INT
