@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"gulnManagement/gulnWebUI/handlers"
+	handlers "gulnManagement/gulnWebUI/handlers/scan"
 	"gulnManagement/gulnWebUI/middlewares"
 
 	"github.com/gorilla/mux"
@@ -13,5 +13,4 @@ func RegisterScanRoutes(router *mux.Router) {
 
 	subRoute.HandleFunc("/list/{page}", handlers.GetScansList).Methods("GET")
 	subRoute.HandleFunc("/{id}", handlers.GetScanByID).Methods("GET")
-	subRoute.HandleFunc("/upload", handlers.UploadScan).Methods("POST")
 }

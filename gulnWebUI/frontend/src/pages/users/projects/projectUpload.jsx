@@ -1,10 +1,13 @@
 import { useState } from "react";
+import { useParams } from "react-router-dom";
 import "../../../css/App.css";
 import HeadMetadata from "../../../components/heads/headMetadata";
 import ProtectedLayout from "../../../components/layouts/protectedLayout";
 
-const ScanUpload = () => {
+const ProjectUpload = () => {
 	const [file, setFile] = useState(null);
+    const [scanName, setScanName] = useState("");
+    const { projectUUID } = useParams();
 
 	const handleFileChange = (e) => {
 		setFile(e.target.files[0]);  // Only taking the first file
@@ -18,11 +21,10 @@ const ScanUpload = () => {
 			return;
 		}
 
-		const formData = new FormData();
-		formData.append("file", file); // key name 'file' should match what your backend expects
+        const formData = new FormData(e.target);
 
 		try {
-			const response = await fetch("http://localhost:8080/scans/upload", {
+			const response = await fetch("http://localhost:8080/projects/upload/" + projectUUID, {
 				method: "POST",
 				credentials: "include",
 				body: formData,
@@ -41,13 +43,21 @@ const ScanUpload = () => {
 
 	return (
 		<ProtectedLayout>
-			<HeadMetadata title={"Scan Upload"}/>
+			<HeadMetadata title={"Project Scan Upload"}/>
 			<form onSubmit={handleSubmit}>
-				<input type="file" onChange={handleFileChange} accept=".xml" />
+                <label>Scan Name</label>
+                <input
+                    type="text"
+                    name="scanName"
+                    value={scanName}
+                    onChange={(e) => setScanName(e.target.value)}
+                />
+                <label> File Upload</label>
+				<input type="file" name="file" onChange={handleFileChange} accept=".xml" />
 				<button type="submit">Upload</button>
 			</form>
 		</ProtectedLayout>
 	);
 };
 
-export default ScanUpload;
+export default ProjectUpload;

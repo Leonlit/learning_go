@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import HeadMetadata from "../../components/heads/headMetadata";
-import ProtectedLayout from "../../components/layouts/protectedLayout";
+import HeadMetadata from "../../../components/heads/headMetadata";
+import ProtectedLayout from "../../../components/layouts/protectedLayout";
 
 const ProjectDashboard = () => {
 	const [projects, setprojects] = useState([]);
@@ -35,16 +35,16 @@ const ProjectDashboard = () => {
 
 	return (
 		<ProtectedLayout>
-			<HeadMetadata title={"Dashboard"}/>
+			<HeadMetadata title={"Project Dashboard"}/>
+			<button><a href="/users/projects/new">Create New Project</a></button>
 			{<div className="dashboard">
 				<h2>Project Dashboard</h2>
 				{!projects || projects.length === 0 ? (
-					<p>No data in database.</p>
+					<p>No Projects.</p>
 				) : (
 					<table className="project-table">
 						<thead>
 							<tr>
-								<th>ID</th>
 								<th>Project Name</th>
 								<th>Created On</th>
 							</tr>
@@ -52,8 +52,7 @@ const ProjectDashboard = () => {
 						<tbody>
 							{projects.map((project) => (
 								<tr key={project.project_uuid}>
-									<td>{project.project_uuid}</td>
-									<td>{project.project_name}</td>
+									<td><a href={"/users/projects/info/" + project.project_uuid}>{project.project_name}</a></td>
 									<td>{new Date(project.project_created).toLocaleString()}</td>
 								</tr>
 							))}

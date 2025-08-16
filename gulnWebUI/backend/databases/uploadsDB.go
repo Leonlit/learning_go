@@ -7,17 +7,18 @@ import (
 	"time"
 )
 
-func SaveScanResultsToDatabase(userUUID string, nmapStruct *parser.NmapRun) bool {
+func SaveScanResultsToDatabase(projectUUID, scanName string, nmapStruct *parser.NmapRun) bool {
 
 	var scanUUID string
 	query := `
-		INSERT INTO scans (scan_uuid, user_uuid, scan_start_time, scan_finish_time, hosts_up, hosts_down, total_hosts)
-		VALUES (uuid_generate_v4(), $1, $2, $3, $4, $5, $6)
+		INSERT INTO scans (scan_uuid, project_uuid, scan_name, scan_start_time, scan_finish_time, hosts_up, hosts_down, total_hosts)
+		VALUES (uuid_generate_v4(), $1, $2, $3, $4, $5, $6, $7)
 		RETURNING scan_uuid
 	`
 
 	err := DBObj.QueryRow(query,
-		userUUID,
+		projectUUID,
+		scanName,
 		time.Unix(nmapStruct.StartTime, 0),
 		time.Unix(nmapStruct.RunStats.Finished.Time, 0),
 		nmapStruct.RunStats.Hosts.Up,

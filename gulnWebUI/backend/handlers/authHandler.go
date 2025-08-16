@@ -176,10 +176,6 @@ func ParseJWT(tokenString string) (*Claims, error) {
 }
 
 func AuthMe(w http.ResponseWriter, r *http.Request) {
-	// If we're here, middleware already validated the token
-	for _, c := range r.Cookies() {
-		fmt.Printf("Cookie: %s=%s\n", c.Name, c.Value)
-	}
 	w.WriteHeader(http.StatusOK)
 }
 

@@ -6,9 +6,17 @@ CREATE TABLE users (
     password_hash TEXT NOT NULL
 );
 
+CREATE TABLE projects (
+    project_uuid UUID NOT NULL PRIMARY KEY,
+    user_uuid UUID NOT NULL REFERENCES users(user_uuid),
+    project_name TEXT,
+    project_created TIMESTAMPTZ
+)
+
 CREATE TABLE scans (
     scan_uuid UUID NOT NULL PRIMARY KEY,
-    user_uuid UUID NOT NULL REFERENCES users(user_uuid),
+    project_uuid UUID NOT NULL REFERENCES projects(project_uuid),
+    scan_name TEXT,
     scan_start_time TIMESTAMPTZ,
     scan_finish_time TIMESTAMPTZ,
     hosts_up INT,

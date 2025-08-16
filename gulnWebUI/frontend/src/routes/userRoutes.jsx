@@ -1,6 +1,9 @@
 import { Routes, Route, Outlet } from "react-router-dom";
 import Dashboard from "../pages/users/dashboard";
-import ScanUpload from "../pages/users/scan/scanUpload";
+import ProjectDashboard from "../pages/users/projects/projectsDashboard";
+import ProjectNew from "../pages/users/projects/projectNew"
+import ProjectInfo from "../pages/users/projects/projectInfo"
+import ProjectUpload from "../pages/users/projects/projectUpload"
 import ProtectedRoute from "../components/auth/protectedRoutes";
 
 const UserRoutes = () => {
@@ -10,13 +13,31 @@ const UserRoutes = () => {
 				<ProtectedRoute>
 					<Dashboard />
 				</ProtectedRoute>
-			}
+			}/>
 
-			/>
-			<Route path="scanUpload" element={
+			<Route path="projects" element={
 				<ProtectedRoute>
-					<ScanUpload />
-				</ProtectedRoute>} />
+					<ProjectDashboard />
+				</ProtectedRoute>
+			}/>
+
+			<Route path="projects/new" element={
+				<ProtectedRoute>	
+					<ProjectNew />
+				</ProtectedRoute>
+			} />
+
+			<Route path="projects/info/:projectUUID" element={
+				<ProtectedRoute>	
+					<ProjectInfo />
+				</ProtectedRoute>
+			} />
+
+			<Route path="projects/upload/:projectUUID" element={
+				<ProtectedRoute>	
+					<ProjectUpload />
+				</ProtectedRoute>
+			} />
 		</Routes>
 	);
 };
