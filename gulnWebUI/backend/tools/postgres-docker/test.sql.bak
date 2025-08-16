@@ -2,15 +2,15 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE TABLE users (
     user_uuid UUID NOT NULL PRIMARY KEY,
     username TEXT NOT NULL,
-    created_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_time TIMESTAMPTZ,
     password_hash TEXT NOT NULL
 );
 
 CREATE TABLE scans (
     scan_uuid UUID NOT NULL PRIMARY KEY,
     user_uuid UUID NOT NULL REFERENCES users(user_uuid),
-    scan_start_time TIMESTAMP,
-    scan_finish_time TIMESTAMP,
+    scan_start_time TIMESTAMPTZ,
+    scan_finish_time TIMESTAMPTZ,
     hosts_up INT,
     hosts_down INT,
     total_hosts INT
@@ -54,7 +54,7 @@ CREATE TABLE ports (
     host_uuid UUID NOT NULL REFERENCES hosts(host_uuid) ON DELETE CASCADE,
     port_number INT,
     protocol port_protocol,
-    state port_state
+    state port_state,
     reason TEXT
 );
 
