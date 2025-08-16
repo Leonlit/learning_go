@@ -1,3 +1,4 @@
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE TABLE users (
     user_uuid UUID NOT NULL PRIMARY KEY,
     username TEXT NOT NULL,
@@ -54,6 +55,7 @@ CREATE TABLE ports (
     port_number INT,
     protocol port_protocol,
     state port_state
+    reason TEXT
 );
 
 CREATE TABLE services (
@@ -62,7 +64,8 @@ CREATE TABLE services (
     service_name TEXT,
     service_product TEXT,
     service_version TEXT,
-    service_fp TEXT
+    service_fp TEXT,
+    service_cpe TEXT
 );
 
 CREATE TABLE scripts (

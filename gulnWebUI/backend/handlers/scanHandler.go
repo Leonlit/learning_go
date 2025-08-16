@@ -75,8 +75,8 @@ func UploadScan(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	saved := databases.SaveScanResultsToDatabase(userUUID, nmapRun)
-	if !saved {
+	savedScanUUID := databases.SaveScanResultsToDatabase(userUUID, nmapRun)
+	if !savedScanUUID {
 		http.Error(w, "Error Saving Nmap results", http.StatusInternalServerError)
 		return
 	}

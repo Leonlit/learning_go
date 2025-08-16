@@ -43,7 +43,7 @@ type PortService struct {
 	ServiceProduct     string `xml:"product,attr"`
 	ServiceVersion     string `xml:"version,attr"`
 	ServiceFingerPrint string `xml:"servicefp,attr"`
-	ServiceCPE         []CPE  `xml:"cpe"`
+	ServiceCPE         CPE    `xml:"cpe"`
 }
 
 type CPE struct {
