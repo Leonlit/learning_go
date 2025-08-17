@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import "../../../css/App.css";
 import HeadMetadata from "../../../components/heads/headMetadata";
 import ProtectedLayout from "../../../components/layouts/protectedLayout";
@@ -8,6 +8,7 @@ const ProjectUpload = () => {
 	const [file, setFile] = useState(null);
     const [scanName, setScanName] = useState("");
     const { projectUUID } = useParams();
+	const {state} = useLocation()
 
 	const handleFileChange = (e) => {
 		setFile(e.target.files[0]);  // Only taking the first file
@@ -43,8 +44,9 @@ const ProjectUpload = () => {
 
 	return (
 		<ProtectedLayout>
-			<HeadMetadata title={"Project Scan Upload"}/>
+			<HeadMetadata title={state.projectName + " - Project Scan Upload"}/>
 			<form onSubmit={handleSubmit}>
+				<h2>{state.projectName + " - Scan Upload"}</h2>
                 <label>Scan Name</label>
                 <input
                     type="text"

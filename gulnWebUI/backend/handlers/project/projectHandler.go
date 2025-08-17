@@ -152,3 +152,28 @@ func UploadProjectScan(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprintf(w, "File uploaded successfully: %s", file)
 }
+
+func GetProjectScanInfo(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	projectUUID := vars["projectUUID"]
+	scanUUID := vars["scanUUID"]
+	pageStr := vars["page"]
+
+	// Convert to integer
+	page, err := strconv.Atoi(pageStr)
+	if err != nil || page < 1 {
+		http.Error(w, "Invalid page number", http.StatusBadRequest)
+		return
+	}
+
+	hosts, err := databases.GetProjectScanHosts(projectUUID, scanUUID, page)
+	if err != nil {
+		http.Error(w, "Error fetching project scan info", http.StatusInternalServerError)
+		log.Println("GetProjectScan error:", err)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(hosts)
+
+}

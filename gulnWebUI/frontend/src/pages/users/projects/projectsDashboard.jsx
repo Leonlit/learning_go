@@ -1,11 +1,19 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import HeadMetadata from "../../../components/heads/headMetadata";
 import ProtectedLayout from "../../../components/layouts/protectedLayout";
 
 const ProjectDashboard = () => {
+	const navigate = useNavigate();
 	const [projects, setprojects] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState("");
+
+	const navigateToProjectInfo = (project) => {
+		navigate("/users/projects/info/" + project.project_uuid, {
+			state: { projectUUID: project.project_uuid, projectName: project.project_name }
+		})
+	}
 
 	useEffect(() => {
 		const fetchprojects = async () => {
@@ -35,7 +43,7 @@ const ProjectDashboard = () => {
 
 	return (
 		<ProtectedLayout>
-			<HeadMetadata title={"Project Dashboard"}/>
+			<HeadMetadata title={"Project Dashboard"} />
 			<button><a href="/users/projects/new">Create New Project</a></button>
 			{<div className="dashboard">
 				<h2>Project Dashboard</h2>
@@ -52,7 +60,7 @@ const ProjectDashboard = () => {
 						<tbody>
 							{projects.map((project) => (
 								<tr key={project.project_uuid}>
-									<td><a href={"/users/projects/info/" + project.project_uuid}>{project.project_name}</a></td>
+									<td><a onClick={() => navigateToProjectInfo(project)}>{project.project_name}</a></td>
 									<td>{new Date(project.project_created).toLocaleString()}</td>
 								</tr>
 							))}

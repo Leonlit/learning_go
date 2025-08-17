@@ -15,5 +15,6 @@ func RegisterProjectRoutes(router *mux.Router) {
 	subRoute.HandleFunc("/list/{page}", handlers.GetProjectsList).Methods("GET")
 	subRoute.HandleFunc("/info/{projectUUID}", handlers.GetProjectInfo).Methods("GET")
 	subRoute.HandleFunc("/info/scans/{projectUUID}/{page}", handlers.GetProjectScan).Methods("GET")
+	subRoute.HandleFunc("/scans/info/{projectUUID}/{scanUUID}/{page}", handlers.GetProjectScanInfo).Methods("GET")
 	subRoute.HandleFunc("/upload/{projectUUID}", handlers.UploadProjectScan).Methods("POST")
 }

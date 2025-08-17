@@ -14,6 +14,18 @@ body {
 	height: 100vh;
 }
 
+a {
+	text-decoration: none;
+}
+
+a:visited {
+	color: black;
+}
+
+button {
+	padding: 5px;
+}
+
 .login-container {
 	background-color: white;
 	padding: 20px;
@@ -155,4 +167,8 @@ input {
 	/* Align right in dashboard */
 	position: absolute;
 	right: 2rem;
+}
+
+tbody a {
+	cursor: pointer;
 }

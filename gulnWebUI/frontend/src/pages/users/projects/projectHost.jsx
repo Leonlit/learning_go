@@ -1,29 +1,34 @@
 import { useEffect, useState } from "react";
-import { useParams, useLocation, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import HeadMetadata from "../../../components/heads/headMetadata";
 import ProtectedLayout from "../../../components/layouts/protectedLayout";
 
 const ProjectInfo = () => {
+	const [project, setprojects] = useState([]);
 	const [scans, setScans] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState("");
     const { projectUUID } = useParams();
-	const navigate = useNavigate();
-	const {state} = useLocation()
-
-	const navigateToProjectUpload = (project) => {
-		navigate("/users/projects/upload/" + project.project_uuid, {
-			state: {projectName: project.projectName}
-		})
-	}
-
-	const navigateToScanInfo = (projectUUID, scan) => {
-		navigate("/users/projects/info/"+ projectUUID +"/scan/info/" + scan.scan_uuid, {
-			state: {scanName: scan.scan_name}
-		})
-	}
 
 	useEffect(() => {
+		const fetchProjectInfo = async () => {
+			try {
+				const res = await fetch("http://localhost:8080/projects/info/" + projectUUID, {
+					credentials: "include", // Send JWT cookie
+				});
+
+				if (!res.ok) {
+					throw new Error("Failed to fetch scans");
+				}
+
+				const data = await res.json();
+				setprojects(data);
+			} catch (err) {
+				setError(err.message);
+			}
+		};
+
+		fetchProjectInfo();
 
 		const fetchScans = async () => {
 			try {
@@ -52,19 +57,19 @@ const ProjectInfo = () => {
 
 	return (
 		<ProtectedLayout>
-			<HeadMetadata title={state.projectName + " - Project Info"}/>
-			<button><a onClick={() => navigateToProjectUpload(state)}>Add Scan</a></button>
+			<HeadMetadata title={project.project_name + " - Project Info"}/>
+			<button><a href={"/users/projects/upload/" + projectUUID}>Add Scan</a></button>
 			<div className="dashboard">
-				<h2>{state.projectName} - Project Info</h2>
+				<h2>{project.project_name} - Project Info</h2>
 				{!scans || scans.length === 0 ? (
 					<p>No data in database.</p>
 				) : (
 					<table className="scan-table">
 						<thead>
 							<tr>
+								<th>ID</th>
 								<th>Scan Name</th>
-								<th>Total Hosts</th>
-								<th>Hosts Up</th>
+								<th>Status</th>
 								<th>Hosts Down</th>
 								<th>Start Date</th>
 								<th>Finish Date</th>
@@ -73,7 +78,7 @@ const ProjectInfo = () => {
 						<tbody>
 							{scans.map((scan) => (
 								<tr key={scan.scan_uuid}>
-									<td><a onClick={() => navigateToScanInfo(state.projectUUID, scan)}>{scan.scan_name}</a></td>
+									<td>{scan.scan_uuid}</td>
 									<td>{scan.total_hosts}</td>
 									<td>{scan.hosts_up}</td>
 									<td>{scan.hosts_down}</td>

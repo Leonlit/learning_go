@@ -11,6 +11,14 @@ type Project struct {
 	ProjectCreated time.Time `json:"project_created"`
 }
 
+type Host struct {
+	HostUUID string `json:"host_uuid"`
+	IPAddr   string `json:"ip_address"`
+	AddrType string `json:"addr_type"`
+	Hostname string `json:"hostname"`
+	Status   string `json:"status"`
+}
+
 func GetProjectList(userUUID string, page int) ([]Project, error) {
 	offset := (page - 1) * 10
 	query := `
@@ -107,4 +115,41 @@ func GetProjectScan(projectUUID string, page int) ([]Scan, error) {
 	}
 
 	return scans, nil
+}
+
+func GetProjectScanHosts(projectUUID, scanUUID string, page int) ([]Host, error) {
+	offset := (page - 1) * 10
+	query := `
+		SELECT h.host_uuid, 
+		h.ip_address, 
+		h.addr_type, 
+		h.hostname, 
+		h.status
+		FROM hosts h
+		JOIN scans s ON h.scan_uuid = s.scan_uuid
+		WHERE s.project_uuid = $1
+		AND s.scan_uuid = $2
+		LIMIT 10 OFFSET $3;
+	`
+
+	rows, err := DBObj.Query(query, projectUUID, scanUUID, offset)
+	if err != nil {
+		log.Println("Query error:", err)
+		return nil, err
+	}
+	defer rows.Close()
+	var hosts []Host
+	for rows.Next() {
+		var host Host
+		if err := rows.Scan(&host.HostUUID, &host.IPAddr, &host.AddrType, &host.Hostname, &host.Status); err != nil {
+			return nil, err
+		}
+		hosts = append(hosts, host)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return hosts, nil
 }
