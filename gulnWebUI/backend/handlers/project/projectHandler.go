@@ -177,3 +177,21 @@ func GetProjectScanInfo(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(hosts)
 
 }
+
+func GetProjectScanHostInfo(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	projectUUID := vars["projectUUID"]
+	scanUUID := vars["scanUUID"]
+	hostUUID := vars["hostUUID"]
+
+	hosts, err := databases.GetProjectScanHostInfo(projectUUID, scanUUID, hostUUID)
+	if err != nil {
+		http.Error(w, "Error fetching project scan info", http.StatusInternalServerError)
+		log.Println("GetProjectScanHostInfo error:", err)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(hosts)
+
+}

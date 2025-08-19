@@ -6,17 +6,29 @@ import (
 )
 
 type Project struct {
-	ProjectUUID    string    `json:"project_uuid"`
-	ProjectName    string    `json:"project_name"`
-	ProjectCreated time.Time `json:"project_created"`
+	ProjectUUID    *string    `json:"project_uuid"`
+	ProjectName    *string    `json:"project_name"`
+	ProjectCreated *time.Time `json:"project_created"`
 }
 
 type Host struct {
-	HostUUID string `json:"host_uuid"`
-	IPAddr   string `json:"ip_address"`
-	AddrType string `json:"addr_type"`
-	Hostname string `json:"hostname"`
-	Status   string `json:"status"`
+	HostUUID *string `json:"host_uuid"`
+	IPAddr   *string `json:"ip_address"`
+	AddrType *string `json:"addr_type"`
+	Hostname *string `json:"hostname"`
+	Status   *string `json:"status"`
+}
+
+type PortInfo struct {
+	PortUUID           *string `json:"port_uuid"`
+	PortNumber         *int64  `json:"port_number"`
+	PortProtocol       *string `json:"protocol"`
+	PortState          *string `json:"state"`
+	PortReason         *string `json:"reason"`
+	PortServiceUUID    *string `json:"service_uuid"`
+	PortServiceName    *string `json:"service_name"`
+	PortServiceProduct *string `json:"service_product"`
+	PortServiceVersion *string `json:"service_version"`
 }
 
 func GetProjectList(userUUID string, page int) ([]Project, error) {
@@ -152,4 +164,49 @@ func GetProjectScanHosts(projectUUID, scanUUID string, page int) ([]Host, error)
 	}
 
 	return hosts, nil
+}
+
+func GetProjectScanHostInfo(projectUUID, scanUUID, hostUUID string) ([]PortInfo, error) {
+	query := `
+		SELECT 
+			p.port_uuid, 
+			p.port_number, 
+			p.protocol, 
+			p.state, 
+			p.reason,
+			sv.service_uuid,
+			sv.service_name,
+			sv.service_product,
+			sv.service_version
+		FROM hosts h
+		JOIN scans sn ON h.scan_uuid = sn.scan_uuid
+			LEFT JOIN ports p ON h.host_uuid = p.host_uuid
+        	LEFT JOIN services sv ON p.port_uuid = sv.port_uuid
+        WHERE sn.project_uuid = $1
+        	AND sn.scan_uuid = $2
+        	AND h.host_uuid = $3;
+	`
+
+	rows, err := DBObj.Query(query, projectUUID, scanUUID, hostUUID)
+	if err != nil {
+		log.Println("Query error:", err)
+		return nil, err
+	}
+	defer rows.Close()
+	var portsInfo []PortInfo
+	for rows.Next() {
+		var portInfo PortInfo
+		if err := rows.Scan(&portInfo.PortUUID, &portInfo.PortNumber, &portInfo.PortProtocol,
+			&portInfo.PortState, &portInfo.PortReason, &portInfo.PortServiceUUID,
+			&portInfo.PortServiceName, &portInfo.PortServiceProduct, &portInfo.PortServiceVersion); err != nil {
+			return nil, err
+		}
+		portsInfo = append(portsInfo, portInfo)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return portsInfo, nil
 }
