@@ -52,10 +52,10 @@ const ProjectInfo = () => {
 
 	return (
 		<ProtectedLayout>
-			<HeadMetadata title={state.projectName + " - Project Info"}/>
+			<HeadMetadata title={state.projectName + " - Project Scans"}/>
 			<button><a onClick={() => navigateToProjectUpload(state)}>Add Scan</a></button>
 			<div className="dashboard">
-				<h2>{state.projectName} - Project Info</h2>
+				<h2>{state.projectName} - Project Scans</h2>
 				{!scans || scans.length === 0 ? (
 					<p>No data in database.</p>
 				) : (

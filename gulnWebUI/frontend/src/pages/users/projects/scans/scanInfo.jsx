@@ -13,7 +13,7 @@ const ProjectScanInfo = () => {
 
 	const navigateToHostInfo = (host) => {
 		navigate("/users/projects/info/"+ projectUUID +"/scan/info/" + scanUUID + "/host/" + host.host_uuid, {
-			state: {hostName: host.host_uuid, ipAddr: host.ip_address}
+			state: {ipAddr: host.ip_address}
 		})
 	}
 

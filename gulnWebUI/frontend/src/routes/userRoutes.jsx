@@ -6,6 +6,7 @@ import ProjectInfo from "../pages/users/projects/projectInfo"
 import ProjectScanInfo from "../pages/users/projects/scans/scanInfo"
 import ProjectUpload from "../pages/users/projects/projectUpload"
 import ProtectedRoute from "../components/auth/protectedRoutes";
+import ProjectScanHostInfo from "../pages/users/projects/scans/hostInfo"
 
 const UserRoutes = () => {
 	return (
@@ -43,6 +44,12 @@ const UserRoutes = () => {
 			<Route path="projects/info/:projectUUID/scan/info/:scanUUID" element={
 				<ProtectedRoute>	
 					<ProjectScanInfo />
+				</ProtectedRoute>
+			} />
+
+			<Route path="projects/info/:projectUUID/scan/info/:scanUUID/host/:hostUUID" element={
+				<ProtectedRoute>	
+					<ProjectScanHostInfo />
 				</ProtectedRoute>
 			} />
 		</Routes>
