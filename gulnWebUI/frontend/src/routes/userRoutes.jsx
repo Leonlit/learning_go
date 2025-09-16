@@ -7,6 +7,7 @@ import ProjectScanInfo from "../pages/users/projects/scans/scanInfo"
 import ProjectUpload from "../pages/users/projects/projectUpload"
 import ProtectedRoute from "../components/auth/protectedRoutes";
 import ProjectScanHostInfo from "../pages/users/projects/scans/hostInfo"
+import ProjectScanPortInfo from "../pages/users/projects/scans/portInfo"
 
 const UserRoutes = () => {
 	return (
@@ -50,6 +51,12 @@ const UserRoutes = () => {
 			<Route path="projects/info/:projectUUID/scan/info/:scanUUID/host/:hostUUID" element={
 				<ProtectedRoute>	
 					<ProjectScanHostInfo />
+				</ProtectedRoute>
+			} />
+
+			<Route path="projects/info/:projectUUID/scan/info/:scanUUID/host/:hostUUID/port/:portUUID" element={
+				<ProtectedRoute>	
+					<ProjectScanPortInfo />
 				</ProtectedRoute>
 			} />
 		</Routes>

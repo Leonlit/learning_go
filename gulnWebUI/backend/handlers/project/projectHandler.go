@@ -79,6 +79,23 @@ func GetProjectInfo(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func GetProjectHeaderInfo(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	projectUUID := vars["projectUUID"]
+	userUUID := r.Context().Value("UserUUID").(string)
+
+	projects, err := databases.GetProjectScanUniqueHostsCount(userUUID, projectUUID)
+	if err != nil {
+		http.Error(w, "Error fetching project header info", http.StatusInternalServerError)
+		log.Println("GetProjectHeaderInfo error:", err)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(projects)
+
+}
+
 func GetProjectScan(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	projectUUID := vars["projectUUID"]
@@ -193,5 +210,24 @@ func GetProjectScanHostInfo(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(hosts)
+
+}
+
+func GetProjectScanHostPortInfo(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	projectUUID := vars["projectUUID"]
+	scanUUID := vars["scanUUID"]
+	hostUUID := vars["hostUUID"]
+	portUUID := vars["portUUID"]
+
+	portDetails, err := databases.GetProjectScanHostPortInfo(projectUUID, scanUUID, hostUUID, portUUID)
+	if err != nil {
+		http.Error(w, "Error fetching project scan info", http.StatusInternalServerError)
+		log.Println("GetProjectScanHostPortInfo error:", err)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(portDetails)
 
 }

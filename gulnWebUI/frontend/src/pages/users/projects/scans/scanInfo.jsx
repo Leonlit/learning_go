@@ -51,7 +51,7 @@ const ProjectScanInfo = () => {
 				{!hosts || hosts.length === 0 ? (
 					<p>No data in database.</p>
 				) : (
-					<table className="project-table">
+					<table className="styled-table">
 						<thead>
 							<tr>
 								<th>IP Address</th>

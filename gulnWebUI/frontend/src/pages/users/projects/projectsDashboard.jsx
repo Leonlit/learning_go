@@ -50,7 +50,7 @@ const ProjectDashboard = () => {
 				{!projects || projects.length === 0 ? (
 					<p>No Projects.</p>
 				) : (
-					<table className="project-table">
+					<table className="styled-table">
 						<thead>
 							<tr>
 								<th>Project Name</th>

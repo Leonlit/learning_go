@@ -1,14 +1,22 @@
 import { useEffect, useState } from "react";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import HeadMetadata from "../../../../components/heads/headMetadata";
 import ProtectedLayout from "../../../../components/layouts/protectedLayout";
 
 const ProjectScanHostInfo = () => {
+	const navigate = useNavigate();
 	const [ports, setPorts] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState("");
 	const { projectUUID, scanUUID, hostUUID } = useParams();
 	const {state: hostState} = useLocation()
+
+	const navigateToPortInfo = (port) => {
+		navigate("/users/projects/info/"+ projectUUID +"/scan/info/" + scanUUID + 
+			"/host/" + hostUUID + "/port/" + port.port_uuid , {
+			state: {ipAddr: hostState.ipAddr, }
+		})
+	}
 	
 	useEffect(() => {
 		const fetchprojects = async () => {
@@ -18,7 +26,7 @@ const ProjectScanHostInfo = () => {
 				});
 
 				if (!res.ok) {
-					throw new Error("Failed to fetch scan hosts");
+					throw new Error("Failed to fetch host info");
 				}
 
 				const data = await res.json();
@@ -46,7 +54,7 @@ const ProjectScanHostInfo = () => {
 				{!ports ? (
 					<p>No data in database.</p>
 				) : (
-					<table className="project-table">
+					<table className="styled-table">
 						<thead>
 							<tr>
 								<th>Port Number</th>
@@ -61,7 +69,7 @@ const ProjectScanHostInfo = () => {
 						<tbody>
 							{ports.map((port) => (
                             <tr key={port.port_uuid}>
-								<td>{port.port_number}</td>
+								<td><a onClick={() => navigateToPortInfo(port)}>{port.port_number}</a></td>
 								<td>{port.protocol}</td>
 								<td>{port.state}</td>
 								<td>{port.reason}</td>

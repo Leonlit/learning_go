@@ -5,6 +5,7 @@ import ProtectedLayout from "../../../components/layouts/protectedLayout";
 
 const ProjectInfo = () => {
 	const [scans, setScans] = useState([]);
+	const [infoHeader, setInfoHeader] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState("");
     const { projectUUID } = useParams();
@@ -44,7 +45,27 @@ const ProjectInfo = () => {
 			}
 		};
 
+		const fetchHeaderInfo = async () => {
+			try {
+				const res = await fetch("http://localhost:8080/projects/info/header/" + projectUUID, {
+					credentials: "include", // Send JWT cookie
+				});
+
+				if (!res.ok) {
+					throw new Error("Failed to fetch scans");
+				}
+
+				const data = await res.json();
+				setInfoHeader(data);
+			} catch (err) {
+				setError(err.message);
+			} finally {
+				setLoading(false);
+			}
+		};
+
 		fetchScans();
+		fetchHeaderInfo();
 	}, []);
 
 	if (loading) return <p>Loading...</p>;
@@ -56,10 +77,19 @@ const ProjectInfo = () => {
 			<button><a onClick={() => navigateToProjectUpload(state)}>Add Scan</a></button>
 			<div className="dashboard">
 				<h2>{state.projectName} - Project Scans</h2>
+				{ !infoHeader ? (
+					<p>No data in database.</p>
+				) : (
+					<section>
+						<span>Scans: {infoHeader.scan_count}</span>
+						<span>Hosts: {infoHeader.hosts_count}</span>
+					</section>
+				)}
+
 				{!scans || scans.length === 0 ? (
 					<p>No data in database.</p>
 				) : (
-					<table className="scan-table">
+					<table className="styled-table">
 						<thead>
 							<tr>
 								<th>Scan Name</th>

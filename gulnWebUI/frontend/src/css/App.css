@@ -11,7 +11,7 @@ body {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	height: 100vh;
+	min-height: 100vh;
 }
 
 a {
@@ -171,4 +171,34 @@ input {
 
 tbody a {
 	cursor: pointer;
+}
+
+.styled-table {
+	max-width: 80vw;
+	margin: 20px;
+	font-size: 15px;
+}
+
+.styled-table th,
+.styled-table td {
+	padding: 12px 16px;
+	text-align: left;
+	word-break: break-word;
+	min-width: 100px;
+}
+
+.styled-table th {
+	background-color: #f4f6f8;
+	font-weight: 600;
+	border-bottom: 2px solid #ddd;
+}
+
+.styled-table tr {
+	background-color: #fff;
+	border: 1px solid #ddd;
+	border-radius: 6px;
+}
+
+.styled-table tr:hover {
+	background-color: #f9fafb;
 }
