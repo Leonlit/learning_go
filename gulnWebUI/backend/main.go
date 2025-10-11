@@ -36,8 +36,7 @@ func main() {
 
 	// Register routes
 	routes.RegisterAuthRoutes(router)
-	routes.RegisterScanRoutes(router)
-	routes.RegisterHostRoutes(router)
+	routes.RegisterCoreRoutes(router)
 	routes.RegisterProjectRoutes(router)
 
 	log.Println("Using port 8080")

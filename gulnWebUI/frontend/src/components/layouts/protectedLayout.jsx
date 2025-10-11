@@ -4,7 +4,7 @@ const ProtectedLayout = ({ children }) => {
 			<header className="header"> {/* Placeholder for Nav */}
 				<h1>Guln Vulnerability Management</h1>
                 <nav className="header-nav">
-					<a href="/users/settings">Settings</a>
+					<button><a href="/users/settings">Settings</a></button>
 					<button onClick={handleLogout}>Logout</button>
 				</nav>
 			</header>
@@ -13,7 +13,6 @@ const ProtectedLayout = ({ children }) => {
 				<aside className="sidebar"> {/* Placeholder for Sidebar */}
 					<p><a href="/users/dashboard">Dashboard</a></p>
 					<p><a href="/users/projects">Projects</a></p>
-					<p><a href="/users/scans/upload">Upload Scan</a></p>
 				</aside>
 
 				<main className="content-area">

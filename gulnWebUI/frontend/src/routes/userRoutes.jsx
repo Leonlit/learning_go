@@ -1,5 +1,5 @@
 import { Routes, Route, Outlet } from "react-router-dom";
-import Dashboard from "../pages/users/dashboard";
+import UserDashboard from "../pages/users/userDashboard";
 import ProjectDashboard from "../pages/users/projects/projectsDashboard";
 import ProjectNew from "../pages/users/projects/projectNew"
 import ProjectInfo from "../pages/users/projects/projectInfo"
@@ -14,7 +14,7 @@ const UserRoutes = () => {
 		<Routes>
 			<Route path="dashboard" element={
 				<ProtectedRoute>
-					<Dashboard />
+					<UserDashboard />
 				</ProtectedRoute>
 			}/>
 
