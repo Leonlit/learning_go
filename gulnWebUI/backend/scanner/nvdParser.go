@@ -1,14 +1,8 @@
 package scanner
 
 type CpeResponse struct {
-	TotalResults    int             `json:"totalResults"`
-	NVDVersion      string          `json:"version"`
-	Vulnerabilities []Vulnerability `json:"vulnerabilities"`
-}
-
-type Vulnerability struct {
 	TotalResults    int                 `json:"totalResults"`
-	Version         string              `json:"version"`
+	NVDVersion      string              `json:"version"`
 	Vulnerabilities []VulnerabilityItem `json:"vulnerabilities"`
 }
 
