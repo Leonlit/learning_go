@@ -63,8 +63,43 @@ CREATE TABLE ports (
     port_number INT,
     protocol port_protocol,
     state port_state,
-    reason TEXT
+    reason TEXT,
+    isVuln boolean,
+    fixed boolean
 );
+
+DO $$
+BEGIN
+    -- Check if the type 'cvss_severity' exists
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'cvss_severity') THEN
+        CREATE TYPE cvss_severity AS ENUM ('CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'NONE');
+    END IF;
+END $$;
+
+DO $$
+BEGIN
+    -- Check if the type 'cvss_version' exists
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'cvss_version') THEN
+        CREATE TYPE cvss_version AS ENUM ('2.0', '3.0', '3.1', '4.0');
+    END IF;
+END $$;
+
+CREATE TABLE vulnerabilitiesCVE (
+    vulnerability_uuid UUID NOT NULL PRIMARY KEY,
+    port_uuid UUID NOT NULL REFERENCES ports(port_uuid) ON DELETE CASCADE,
+    cve_id TEXT, 
+    published TIMESTAMPTZ,
+    last_modified TIMESTAMPTZ,
+    description TEXT,
+    severity cvss_severity,          -- CRITICAL/HIGH/MEDIUM/LOW
+    version cvss_version,      -- 3.1 / 4.0
+    base_score NUMERIC,
+    vector_string TEXT,
+    nvd_json JSONB          -- full raw NVD entry
+);
+
+CREATE UNIQUE INDEX uniq_port_cve
+ON vulnerabilitiesCVE (port_uuid, cve_id);
 
 CREATE TABLE services (
     service_uuid UUID NOT NULL PRIMARY KEY,

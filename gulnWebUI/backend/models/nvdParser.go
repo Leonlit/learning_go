@@ -1,4 +1,4 @@
-package scanner
+package models
 
 type CpeResponse struct {
 	TotalResults    int                 `json:"totalResults"`

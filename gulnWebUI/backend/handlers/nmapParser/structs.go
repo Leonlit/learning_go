@@ -1,4 +1,4 @@
-package parser
+package nmapParser
 
 type NmapRun struct {
 	RunStats    RunStats `xml:"runstats"`

@@ -2,7 +2,7 @@ package generator
 
 import (
 	"fmt"
-	"gulnManagement/gulnWebUI/handlers/parser"
+	"gulnManagement/gulnWebUI/handlers/nmapParser"
 	"html/template"
 	"os"
 	"path/filepath"
@@ -10,12 +10,12 @@ import (
 )
 
 type HostWithPortCount struct {
-	parser.Host
+	nmapParser.Host
 	PortCount int
 }
 
 // ParseXML reads an XML file and unmarshals it into a Document struct.
-func HTMLGenerator(scan *parser.NmapRun) error {
+func HTMLGenerator(scan *nmapParser.NmapRun) error {
 
 	_, filename, _, _ := runtime.Caller(0)
 	dir := filepath.Dir(filename)
@@ -54,7 +54,7 @@ func HTMLGenerator(scan *parser.NmapRun) error {
 
 	// Execute template with struct data and write to file
 	err = tmpl.Execute(file, struct {
-		RunStats    parser.RunStats
+		RunStats    nmapParser.RunStats
 		TargetHosts []HostWithPortCount
 	}{
 		RunStats:    scan.RunStats,

@@ -1,13 +1,13 @@
 package databases
 
 import (
-	"gulnManagement/gulnWebUI/handlers/parser"
+	"gulnManagement/gulnWebUI/handlers/nmapParser"
 	"log"
 	"strings"
 	"time"
 )
 
-func SaveScanResultsToDatabase(projectUUID, scanName string, nmapStruct *parser.NmapRun) bool {
+func SaveScanResultsToDatabase(projectUUID, scanName string, nmapStruct *nmapParser.NmapRun) string {
 
 	var scanUUID string
 	query := `
@@ -26,8 +26,8 @@ func SaveScanResultsToDatabase(projectUUID, scanName string, nmapStruct *parser.
 		nmapStruct.RunStats.Hosts.Total,
 	).Scan(&scanUUID)
 	if err != nil {
-		log.Fatal(err)
-		return false
+		log.Println(err)
+		return ""
 	}
 
 	hostQuery := `
@@ -76,7 +76,7 @@ func SaveScanResultsToDatabase(projectUUID, scanName string, nmapStruct *parser.
 		).Scan(&hostUUID)
 
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
 			continue
 		}
 		// Saving host's ports data
@@ -91,7 +91,7 @@ func SaveScanResultsToDatabase(projectUUID, scanName string, nmapStruct *parser.
 			).Scan(&portUUID)
 
 			if err != nil {
-				log.Fatal(err)
+				log.Println(err)
 				continue
 			}
 
@@ -106,7 +106,7 @@ func SaveScanResultsToDatabase(projectUUID, scanName string, nmapStruct *parser.
 			)
 
 			if serviceSavedResult.Err() != nil {
-				log.Fatal(serviceSavedResult.Err().Error())
+				log.Println(serviceSavedResult.Err().Error())
 				continue
 			}
 
@@ -120,7 +120,7 @@ func SaveScanResultsToDatabase(projectUUID, scanName string, nmapStruct *parser.
 				).Scan(&scriptUUID)
 
 				if err != nil {
-					log.Fatal(err)
+					log.Println(err)
 					continue
 				}
 
@@ -133,7 +133,7 @@ func SaveScanResultsToDatabase(projectUUID, scanName string, nmapStruct *parser.
 					)
 
 					if elemSavedResults.Err() != nil {
-						log.Fatal(elemSavedResults.Err().Error())
+						log.Println(elemSavedResults.Err().Error())
 						continue
 					}
 				}
@@ -141,5 +141,5 @@ func SaveScanResultsToDatabase(projectUUID, scanName string, nmapStruct *parser.
 
 		}
 	}
-	return true
+	return scanUUID
 }

@@ -4,7 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"gulnManagement/gulnWebUI/databases"
-	"gulnManagement/gulnWebUI/handlers/parser"
+	"gulnManagement/gulnWebUI/handlers/nmapParser"
+	"gulnManagement/gulnWebUI/scanner"
 	"log"
 	"net/http"
 	"path/filepath"
@@ -154,7 +155,7 @@ func UploadProjectScan(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	nmapRun, err := parser.ParseNmap(file)
+	nmapRun, err := nmapParser.ParseNmap(file)
 
 	if err != nil {
 		http.Error(w, "Error Parsing Nmap results", http.StatusBadRequest)
@@ -162,7 +163,8 @@ func UploadProjectScan(w http.ResponseWriter, r *http.Request) {
 	}
 
 	savedScanUUID := databases.SaveScanResultsToDatabase(projectUUID, scanName, nmapRun)
-	if !savedScanUUID {
+	scanner.GetPortVulns(projectUUID, savedScanUUID)
+	if savedScanUUID == "" {
 		http.Error(w, "Error Saving Nmap results", http.StatusInternalServerError)
 		return
 	}
