@@ -3,7 +3,6 @@ package handlers
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"gulnManagement/gulnWebUI/databases"
 	"gulnManagement/gulnWebUI/utils"
 	"log"
@@ -21,14 +20,14 @@ type Claims struct {
 
 var secretKey = utils.LoadEnv("JWT_SECRET_KEY")
 
-func hashPassword(password string) (string, error) {
+func hashPassword(password string) string {
 	// Generate a hashed password with bcrypt
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		log.Printf("failed to hash password: %v", err)
-		return "", fmt.Errorf("failed to hash password: %v", err)
+		return ""
 	}
-	return string(hashedPassword), nil
+	return string(hashedPassword)
 }
 
 // Handle login operation
@@ -46,8 +45,6 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	username := user["username"]
 	password := user["password"]
-
-	fmt.Println("Loging in user")
 
 	// Validate user credentials (e.g., check against a database)
 	if !databases.VerifyUserCredentials(username, password) {
@@ -116,9 +113,9 @@ func RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	passwordHash, err := hashPassword(password)
+	passwordHash := hashPassword(password)
 
-	if err != nil {
+	if passwordHash == "" {
 		http.Error(w, "Unexpected Error!", http.StatusInternalServerError)
 		return
 	}

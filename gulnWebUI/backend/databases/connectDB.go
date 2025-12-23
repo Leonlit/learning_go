@@ -37,8 +37,8 @@ func InitDB() {
 		SSLMode:  "disable", // Use "require" for production
 	}
 
-	DBObj, err = NewDB(dbConfig)
-	if err != nil {
+	DBObj = NewDB(dbConfig)
+	if DBObj == nil {
 		log.Fatalf("Failed to connect to the database: %v", err)
 	}
 	//defer DBObj.Close()
@@ -46,7 +46,7 @@ func InitDB() {
 }
 
 // NewDB initializes and returns a new database connection
-func NewDB(cfg DBConfig) (*sql.DB, error) {
+func NewDB(cfg DBConfig) *sql.DB {
 	dsn := fmt.Sprintf(
 		"host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
 		cfg.Host, cfg.Port, cfg.User, cfg.Password, cfg.DBName, cfg.SSLMode,
@@ -54,15 +54,17 @@ func NewDB(cfg DBConfig) (*sql.DB, error) {
 
 	db, err := sql.Open("postgres", dsn)
 	if err != nil {
-		return nil, fmt.Errorf("error opening database: %w", err)
+		log.Printf("Error opening database: %v", err)
+		return nil
 	}
 
 	// Verify the connection is successful
 	if err := db.Ping(); err != nil {
 		db.Close()
-		return nil, fmt.Errorf("error connecting to the database: %w", err)
+		log.Printf("Error opening database: %v", err)
+		return nil
 	}
 
 	log.Println("Successfully connected to the database")
-	return db, nil
+	return db
 }

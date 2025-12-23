@@ -2,7 +2,6 @@ package databases
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 
 	"golang.org/x/crypto/bcrypt"
@@ -23,8 +22,6 @@ func VerifyUserCredentials(username, password string) bool {
 		log.Println(err)
 		return false // other DB error
 	}
-
-	fmt.Println(storedHash)
 
 	// Compare provided password with stored hash
 	if err := bcrypt.CompareHashAndPassword([]byte(storedHash), []byte(password)); err != nil {
@@ -81,7 +78,6 @@ func CreateNewUser(username, passwordHash string) (string, error) {
         RETURNING user_uuid
     `
 	err := DBObj.QueryRow(query, username, passwordHash).Scan(&userUUID)
-	fmt.Println(userUUID)
 	if err != nil {
 		log.Println("Error when creating user entry.")
 		log.Println(err)

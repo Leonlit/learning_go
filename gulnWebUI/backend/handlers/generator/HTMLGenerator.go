@@ -1,9 +1,9 @@
 package generator
 
 import (
-	"fmt"
 	"gulnManagement/gulnWebUI/handlers/nmapParser"
 	"html/template"
+	"log"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -42,7 +42,7 @@ func HTMLGenerator(scan *nmapParser.NmapRun) error {
 	err = os.MkdirAll(outputDirPath, 0755)
 
 	if err != nil {
-		fmt.Println("Error creating directory")
+		log.Println("Error creating directory", outputDirPath, err)
 		return err
 	}
 
