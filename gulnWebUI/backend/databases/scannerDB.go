@@ -2,7 +2,6 @@ package databases
 
 import (
 	"encoding/json"
-	"fmt"
 	"gulnManagement/gulnWebUI/models"
 	"log"
 	"time"
@@ -64,22 +63,22 @@ func SaveNVDResults(cpeRes *models.CpeResponse, portUUID string) error {
 
 		version, severity, score, vector := pickCVSS(cve)
 
-		fmt.Println(version, severity, score, vector)
-
 		desc := englishDescription(cve.Descriptions)
 
-		published, _ := time.Parse(time.RFC3339, cve.Published)
-		modified, _ := time.Parse(time.RFC3339, cve.LastModified)
+		published, _ := parseNVDTime(cve.Published)
+		modified, _ := parseNVDTime(cve.LastModified)
 
 		rawJSON, err := marshalCVE(cve)
 		if err != nil {
+			log.Println("Error when encoding JSON for CVE: ", cve.ID, ",", err)
 			return err
 		}
 
-		_, err = DBObj.Exec(`
-            INSERT INTO vulnerabilitiesCVE (
+		var vulnUUID string
+
+		err = DBObj.QueryRow(`
+            INSERT INTO vulnerability_cve (
                 vulnerability_uuid,
-                port_uuid,
                 cve_id,
                 published,
                 last_modified,
@@ -92,26 +91,54 @@ func SaveNVDResults(cpeRes *models.CpeResponse, portUUID string) error {
             ) VALUES (
                 uuid_generate_v4(),
                 $1, $2, $3, $4, $5,
-                $6, $7, $8, $9, $10
+                $6, $7, $8, $9
             )
-            ON CONFLICT (cve_id, port_uuid) DO NOTHING
+			RETURNING vulnerability_uuid;
         `,
-			portUUID,
 			cve.ID,
-			published,
-			modified,
+			published.Format(time.RFC3339),
+			modified.Format(time.RFC3339),
 			desc,
 			severity,
 			version,
 			score,
 			vector,
 			rawJSON,
-		)
+		).Scan(&vulnUUID)
 
 		if err != nil {
+			log.Println("Error when saving CVE into database: ", cve.ID, ",", err)
 			return err
 		}
+
+		err = SavePortVuln(vulnUUID, portUUID)
+
+		if err != nil {
+			log.Println("Error when saving Port & vuln uuid into database: ", portUUID, vulnUUID, ",", ",", err)
+			return err
+		}
+
 	}
+	return nil
+}
+
+func SavePortVuln(vulnUUID, portUUID string) error {
+	_, err := DBObj.Exec(`
+            INSERT INTO port_vulnerabilities (
+                port_uuid,
+                vulnerability_uuid
+            ) VALUES (
+                $1, $2
+            )
+        `,
+		portUUID,
+		vulnUUID,
+	)
+
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -142,6 +169,20 @@ func englishDescription(desc []models.LangValue) string {
 		}
 	}
 	return ""
+}
+
+func parseNVDTime(s string) (time.Time, error) {
+	if s == "" {
+		return time.Time{}, nil
+	}
+
+	t, err := time.Parse(time.RFC3339Nano, s+"Z")
+	if err != nil {
+		log.Println("Error Parsing time from NVD: ", s, ",", err)
+		return time.Time{}, err
+	}
+
+	return t.UTC(), nil
 }
 
 func marshalCVE(cve models.CVE) ([]byte, error) {

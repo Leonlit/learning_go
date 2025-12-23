@@ -84,9 +84,8 @@ BEGIN
     END IF;
 END $$;
 
-CREATE TABLE vulnerabilitiesCVE (
+CREATE TABLE vulnerability_cve (
     vulnerability_uuid UUID NOT NULL PRIMARY KEY,
-    port_uuid UUID NOT NULL REFERENCES ports(port_uuid) ON DELETE CASCADE,
     cve_id TEXT, 
     published TIMESTAMPTZ,
     last_modified TIMESTAMPTZ,
@@ -98,8 +97,15 @@ CREATE TABLE vulnerabilitiesCVE (
     nvd_json JSONB          -- full raw NVD entry
 );
 
-CREATE UNIQUE INDEX uniq_port_cve
-ON vulnerabilitiesCVE (port_uuid, cve_id);
+CREATE TABLE port_vulnerabilities (
+    port_uuid UUID NOT NULL
+        REFERENCES ports(port_uuid) ON DELETE CASCADE,
+
+    vulnerability_uuid UUID NOT NULL
+        REFERENCES vulnerabilitiesCVE(vulnerability_uuid) ON DELETE CASCADE,
+
+    PRIMARY KEY (port_uuid, vulnerability_uuid)
+)
 
 CREATE TABLE services (
     service_uuid UUID NOT NULL PRIMARY KEY,
