@@ -20,7 +20,7 @@ const CPE_SEARCH_API_END string = "&resultsPerPage=10"
 const CPE_MULTI_LIST_LINK_START string = "https://nvd.nist.gov/vuln/search#/nvd/home?cpeFilterMode=cpe&cpeName=cpe:2.2:"
 const CPE_MULTI_LIST_LINK_END string = ":*:*:*:*:*:*:*&resultType=records"
 
-func GetPortVulns(projectUUID string, scanUUID string) {
+func GetPortVulns(projectUUID, scanUUID string) {
 
 	portsInfoArr, err := databases.GetHostPortsInfo(projectUUID, scanUUID)
 	if err != nil {
