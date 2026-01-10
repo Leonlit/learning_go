@@ -80,10 +80,22 @@ const ProjectInfo = () => {
 				{ !infoHeader ? (
 					<p>No data in database.</p>
 				) : (
-					<section>
-						<span>Scans: {infoHeader.scan_count}</span>
-						<span>Hosts: {infoHeader.hosts_count}</span>
-					</section>
+					<div>
+						<table className="styled-table">
+							<thead>
+								<tr>
+									<th>Scans</th>
+									<th>Hosts</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>{ infoHeader.scan_count }</td>
+									<td>{ infoHeader.hosts_count }</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
 				)}
 
 				{!scans || scans.length === 0 ? (
