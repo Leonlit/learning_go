@@ -124,7 +124,7 @@ func SaveNVDResults(cpeRes *models.CpeResponse, portUUID string) error {
 
 func SavePortVuln(vulnUUID, portUUID string) error {
 	_, err := DBObj.Exec(`
-            INSERT INTO port_vulnerabilities (
+            INSERT INTO port_vulnerabilities_cve (
                 port_uuid,
                 vulnerability_uuid
             ) VALUES (

@@ -97,7 +97,7 @@ CREATE TABLE vulnerability_cve (
     nvd_json JSONB          -- full raw NVD entry
 );
 
-CREATE TABLE port_vulnerabilities (
+CREATE TABLE port_vulnerabilities_cve (
     port_uuid UUID NOT NULL
         REFERENCES ports(port_uuid) ON DELETE CASCADE,
 
