@@ -38,7 +38,7 @@ const ProjectScanInfo = () => {
 		};
 
 		fetchprojects();
-	}, []);
+	}, [projectUUID, scanUUID]);
 
 	if (loading) return <p>Loading...</p>;
 	if (error) return <p className="error">{error}</p>;

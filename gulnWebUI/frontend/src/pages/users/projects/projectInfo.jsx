@@ -25,48 +25,45 @@ const ProjectInfo = () => {
 	}
 
 	useEffect(() => {
+		let cancelled = false;
 
-		const fetchScans = async () => {
+		const fetchAll = async () => {
 			try {
-				const res = await fetch("http://localhost:8080/projects/info/scans/" + projectUUID + "/1", {
-					credentials: "include", // Send JWT cookie
-				});
+				const [scansRes, headerRes] = await Promise.all([
+					fetch(`http://localhost:8080/projects/info/scans/${projectUUID}/1`, {
+						credentials: "include",
+					}),
+					fetch(`http://localhost:8080/projects/info/header/${projectUUID}`, {
+						credentials: "include",
+					}),
+				]);
 
-				if (!res.ok) {
-					throw new Error("Failed to fetch scans");
+				if (!scansRes.ok || !headerRes.ok) {
+					throw new Error("Failed to fetch project info");
 				}
 
-				const data = await res.json();
-				setScans(data);
+				const [scansData, headerData] = await Promise.all([
+					scansRes.json(),
+					headerRes.json(),
+				]);
+
+				if (!cancelled) {
+					setScans(scansData);
+					setInfoHeader(headerData);
+				}
 			} catch (err) {
-				setError(err.message);
+				if (!cancelled) setError(err.message);
 			} finally {
-				setLoading(false);
+				if (!cancelled) setLoading(false);
 			}
 		};
 
-		const fetchHeaderInfo = async () => {
-			try {
-				const res = await fetch("http://localhost:8080/projects/info/header/" + projectUUID, {
-					credentials: "include", // Send JWT cookie
-				});
+		fetchAll();
 
-				if (!res.ok) {
-					throw new Error("Failed to fetch scans");
-				}
-
-				const data = await res.json();
-				setInfoHeader(data);
-			} catch (err) {
-				setError(err.message);
-			} finally {
-				setLoading(false);
-			}
+		return () => {
+			cancelled = true;
 		};
-
-		fetchScans();
-		fetchHeaderInfo();
-	}, []);
+	}, [projectUUID]);
 
 	if (loading) return <p>Loading...</p>;
 	if (error) return <p className="error">{error}</p>;
