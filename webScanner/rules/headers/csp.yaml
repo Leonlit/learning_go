@@ -57,5 +57,6 @@ remediation:
     Only enable preload if the domain is submitted to the HSTS preload list.
 
 references:
-  - OWASP ASVS 14.4.5
-  - RFC 6797
+  - https://www.chromium.org/hsts/
+  - https://datatracker.ietf.org/doc/html/rfc6797
+  - OWASP ASVS 3.7.4
