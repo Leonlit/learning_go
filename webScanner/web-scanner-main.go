@@ -50,7 +50,7 @@ func main() {
 		log.Printf("Error: Got %d status code for %s", res.StatusCode, URL)
 	}
 
-	//resHeaders := res.Header
+	resHeaders := res.Header
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -75,20 +75,18 @@ func main() {
 
 	//fmt.Println(rulesByHeader)
 
-	/* 	for key, values := range resHeaders {
-	//fmt.Println(strings.ToLower(key), values)
-	*/
-	rule, hasRule := rulesByHeader[strings.ToLower("strict-transport-security")]
-	//fmt.Println(rule, hasRule)
-	if !hasRule {
-		return
-	}
+	for key, values := range resHeaders {
+		//fmt.Println(strings.ToLower(key), values)
 
-	values := []string{"max-age=384710; includeSubDomains; preload"}
+		rule, hasRule := rulesByHeader[strings.ToLower(key)]
+		//fmt.Println(rule, hasRule)
+		if !hasRule {
+			return
+		}
 
-	findings := headers.CheckHeader(rule, values)
-	for _, f := range findings {
-		fmt.Println(f)
+		findings := headers.CheckHeader(rule, values)
+		for _, f := range findings {
+			fmt.Println(f)
+		}
 	}
-	/* 	} */
 }
