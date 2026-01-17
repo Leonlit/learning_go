@@ -1,0 +1,61 @@
+id: HSTS_MISSING
+header: Strict-Transport-Security
+category: transport
+required: true
+
+severity:
+  header-missing: low
+  max-age-missing: low
+  max-age-misconfigured: low
+
+description: >
+  HSTS enforces HTTPS and prevents SSL stripping attacks by instructing
+  browsers to only communicate with the application over HTTPS.
+
+statements:
+  header-missing: >
+    The Strict-Transport-Security header is missing from the response.
+
+  max-age-missing: >
+    The Strict-Transport-Security header's max-age attribute is missing from the response.
+
+  max-age-misconfigured: >
+    The Strict-Transport-Security header's max-age attribute value is misconfigured.
+
+checks:
+  - type: present
+    missing-statement: header-missing
+
+  - type: directive
+    name: max-age
+    min: 31536000
+    missing-statement: max-age-missing
+    misconfig-statement: max-age-misconfigured
+
+  - type: directive
+    name: includeSubDomains
+    optional: true
+
+  - type: directive
+    name: preload
+    optional: true
+
+remediation:
+  header-missing: >
+    Include the "Strict-Transport-Security" header in the application's response.
+
+  max-age-missing: >
+    Set the max-age directive to at least 31536000 seconds (1 year).
+
+  max-age-misconfigured: >
+    Set the max-age directive to at least 31536000 seconds (1 year).
+
+  includeSubDomains: >
+    Optionally apply HSTS to all subdomains using includeSubDomains.
+
+  preload: >
+    Only enable preload if the domain is submitted to the HSTS preload list.
+
+references:
+  - OWASP ASVS 14.4.5
+  - RFC 6797
