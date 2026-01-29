@@ -3,9 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
-	"gulnManagement/gulnWebUI/databases"
-	"gulnManagement/gulnWebUI/handlers/nmapParser"
-	"gulnManagement/gulnWebUI/scanner"
+	"gulnManagement/gulnWebUI/internal/databases"
 	"log"
 	"net/http"
 	"path/filepath"
@@ -125,6 +123,8 @@ func UploadProjectScan(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	projectUUID := vars["projectUUID"]
 
+	fmt.Println(projectUUID)
+
 	scanName := r.FormValue("scanName")
 	fmt.Println(scanName)
 	if scanName == "" {
@@ -155,7 +155,7 @@ func UploadProjectScan(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	nmapRun, err := nmapParser.ParseNmap(file)
+	/* nmapRun, err := nmapParser.ParseNmap(file)
 
 	if err != nil {
 		http.Error(w, "Error Parsing Nmap results", http.StatusBadRequest)
@@ -167,7 +167,7 @@ func UploadProjectScan(w http.ResponseWriter, r *http.Request) {
 	if savedScanUUID == "" {
 		http.Error(w, "Error Saving Nmap results", http.StatusInternalServerError)
 		return
-	}
+	} */
 
 	fmt.Fprintf(w, "File uploaded successfully: %s", file)
 }

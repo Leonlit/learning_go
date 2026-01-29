@@ -1,9 +1,9 @@
 package main
 
 import (
-	"gulnManagement/gulnWebUI/databases"
-	"gulnManagement/gulnWebUI/logs"
-	"gulnManagement/gulnWebUI/routes"
+	"gulnManagement/gulnWebUI/internal/databases"
+	"gulnManagement/gulnWebUI/internal/logs"
+	"gulnManagement/gulnWebUI/internal/routes"
 	"log"
 	"net/http"
 
@@ -36,7 +36,6 @@ func main() {
 
 	// Register routes
 	routes.RegisterAuthRoutes(router)
-	routes.RegisterCoreRoutes(router)
 	routes.RegisterProjectRoutes(router)
 
 	log.Println("Using port 8080")

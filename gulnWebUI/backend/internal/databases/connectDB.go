@@ -3,7 +3,7 @@ package databases
 import (
 	"database/sql"
 	"fmt"
-	"gulnManagement/gulnWebUI/utils"
+	"gulnManagement/gulnWebUI/internal/utils"
 	"log"
 	"strconv"
 

@@ -3,8 +3,8 @@ package handlers
 import (
 	"encoding/json"
 	"errors"
-	"gulnManagement/gulnWebUI/databases"
-	"gulnManagement/gulnWebUI/utils"
+	"gulnManagement/gulnWebUI/internal/databases"
+	"gulnManagement/gulnWebUI/internal/utils"
 	"log"
 	"net/http"
 	"time"

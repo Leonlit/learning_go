@@ -2,8 +2,8 @@ package middlewares
 
 import (
 	"context"
-	"gulnManagement/gulnWebUI/handlers"
-	"gulnManagement/gulnWebUI/utils"
+	"gulnManagement/gulnWebUI/internal/handlers"
+	"gulnManagement/gulnWebUI/internal/utils"
 	"net/http"
 )
 

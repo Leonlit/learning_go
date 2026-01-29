@@ -1,8 +1,8 @@
 package routes
 
 import (
-	"gulnManagement/gulnWebUI/handlers"
-	"gulnManagement/gulnWebUI/middlewares"
+	"gulnManagement/gulnWebUI/internal/handlers"
+	"gulnManagement/gulnWebUI/internal/middlewares"
 
 	"github.com/gorilla/mux"
 )
