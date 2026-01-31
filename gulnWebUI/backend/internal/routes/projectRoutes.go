@@ -1,7 +1,7 @@
 package routes
 
 import (
-	handlers "gulnManagement/gulnWebUI/internal/handlers/project"
+	handlers "gulnManagement/gulnWebUI/internal/handler/project"
 	"gulnManagement/gulnWebUI/internal/middlewares"
 
 	"github.com/gorilla/mux"
@@ -14,10 +14,5 @@ func RegisterProjectRoutes(router *mux.Router) {
 	subRoute.HandleFunc("/new", handlers.CreateNewProjects).Methods("POST")
 	subRoute.HandleFunc("/list/{page}", handlers.GetProjectsList).Methods("GET")
 	subRoute.HandleFunc("/info/{projectUUID}", handlers.GetProjectInfo).Methods("GET")
-	subRoute.HandleFunc("/info/header/{projectUUID}", handlers.GetProjectHeaderInfo).Methods("GET")
-	subRoute.HandleFunc("/info/scans/{projectUUID}/{page}", handlers.GetProjectScan).Methods("GET")
-	subRoute.HandleFunc("/scans/info/{projectUUID}/{scanUUID}/{page}", handlers.GetProjectScanInfo).Methods("GET")
-	subRoute.HandleFunc("/scans/host/info/{projectUUID}/{scanUUID}/{hostUUID}", handlers.GetProjectScanHostInfo).Methods("GET")
-	subRoute.HandleFunc("/scans/host/port/info/{projectUUID}/{scanUUID}/{hostUUID}/{portUUID}", handlers.GetProjectScanHostPortInfo).Methods("GET")
 	subRoute.HandleFunc("/upload/{projectUUID}", handlers.UploadProjectScan).Methods("POST")
 }

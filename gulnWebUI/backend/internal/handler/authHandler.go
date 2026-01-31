@@ -1,9 +1,9 @@
-package handlers
+package handler
 
 import (
 	"encoding/json"
 	"errors"
-	"gulnManagement/gulnWebUI/internal/databases"
+	databases "gulnManagement/gulnWebUI/internal/repository"
 	"gulnManagement/gulnWebUI/internal/utils"
 	"log"
 	"net/http"

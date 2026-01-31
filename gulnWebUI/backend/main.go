@@ -1,8 +1,8 @@
 package main
 
 import (
-	"gulnManagement/gulnWebUI/internal/databases"
 	"gulnManagement/gulnWebUI/internal/logs"
+	"gulnManagement/gulnWebUI/internal/repository"
 	"gulnManagement/gulnWebUI/internal/routes"
 	"log"
 	"net/http"
@@ -28,7 +28,7 @@ func enableCORS(next http.Handler) http.Handler {
 
 func main() {
 	logs.InitLogs()
-	databases.InitDB()
+	repository.InitDB()
 
 	router := mux.NewRouter()
 

@@ -2,7 +2,7 @@ package middlewares
 
 import (
 	"context"
-	"gulnManagement/gulnWebUI/internal/handlers"
+	"gulnManagement/gulnWebUI/internal/handler"
 	"gulnManagement/gulnWebUI/internal/utils"
 	"net/http"
 )
@@ -18,7 +18,7 @@ func AuthenticateJWT(next http.Handler) http.Handler {
 			return
 		}
 		// Parse and validate the JWT token
-		claims, err := handlers.ParseJWT(tokenString)
+		claims, err := handler.ParseJWT(tokenString)
 		if err != nil {
 			http.Error(w, "Invalid token", http.StatusUnauthorized)
 			return

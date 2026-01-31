@@ -1,4 +1,4 @@
-package databases
+package repository
 
 import (
 	"database/sql"
@@ -12,7 +12,6 @@ import (
 
 var DBObj *sql.DB
 
-// DBConfig holds the configuration for the database connection
 type DBConfig struct {
 	Host     string
 	Port     int
@@ -34,18 +33,16 @@ func InitDB() {
 		User:     utils.LoadEnv("DB_USER"),
 		Password: utils.LoadEnv("DB_PASS"),
 		DBName:   utils.LoadEnv("DB_NAME"),
-		SSLMode:  "disable", // Use "require" for production
+		SSLMode:  "disable", // TODO: Use "require" for production
 	}
 
 	DBObj = NewDB(dbConfig)
 	if DBObj == nil {
 		log.Fatalf("Failed to connect to the database: %v", err)
 	}
-	//defer DBObj.Close()
 	log.Println("Connected to DB")
 }
 
-// NewDB initializes and returns a new database connection
 func NewDB(cfg DBConfig) *sql.DB {
 	dsn := fmt.Sprintf(
 		"host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
@@ -58,7 +55,6 @@ func NewDB(cfg DBConfig) *sql.DB {
 		return nil
 	}
 
-	// Verify the connection is successful
 	if err := db.Ping(); err != nil {
 		db.Close()
 		log.Printf("Error opening database: %v", err)
