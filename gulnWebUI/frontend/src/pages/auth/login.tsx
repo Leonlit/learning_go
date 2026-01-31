@@ -1,73 +1,77 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import "../../css/App.css";
 import { useNavigate } from "react-router-dom";
-import HeadMetadata from "../../components/heads/headMetadata";
+import LoginPageLayout from "../../components/layouts/loginPageLayout";
 
-const LoginPage = () => {
-	// States to manage form inputs
+const LoginPage = (): JSX.Element => {
 	const navigate = useNavigate();
 
-	const [username, setUsername] = useState("");
-	const [password, setPassword] = useState("");
-	const [error, setError] = useState("");
+	const [username, setUsername] = useState<string>("");
+	const [password, setPassword] = useState<string>("");
+	const [error, setError] = useState<string>("");
 
-	const HandleSubmit = (e) => {
+	const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
 		e.preventDefault();
 
-		fetch('http://localhost:8080/login', {
-			method: 'POST',
+		fetch("http://localhost:8080/login", {
+			method: "POST",
 			credentials: "include",
 			headers: {
-				'Content-Type': 'application/json',
+				"Content-Type": "application/json"
 			},
-			body: JSON.stringify({ username, password }),
+			body: JSON.stringify({ username, password })
 		})
-		.then((response) => {
-			if (!response.ok) {
-				throw new Error(`HTTP error! Status: ${response.status}`);
-			}
-			return response.json();
-		})
-		.then((data) => {
-			console.log(data);
-			navigate("/users/dashboard")
-			// You can add a success state or redirect after successful login
-		})
-		.catch((error) => {
-			console.error('Error fetching data:', error);
-			setError("Invalid username or password.");
-		});
+			.then((response) => {
+				if (!response.ok) {
+					throw new Error(`HTTP error! Status: ${response.status}`);
+				}
+				return response.json();
+			})
+			.then(() => {
+				navigate("/users/dashboard");
+			})
+			.catch((err: unknown) => {
+				console.error("Error fetching data:", err);
+				setError("Invalid username or password.");
+			});
 	};
 
 	return (
 		<div>
-			<HeadMetadata title={"Login"}/>
-			<div className="login-container">
-				<h1>Guln Vulnerability Management</h1><br />
-				<h2>Login</h2>
-				<form onSubmit={HandleSubmit} className="login-form">
+			<LoginPageLayout title="Login">
+				<form onSubmit={handleSubmit} className="login-form">
 					<div className="input-group">
 						<label htmlFor="username">Username:</label>
 						<input
 							type="text"
 							id="username"
 							value={username}
-							onChange={(e) => setUsername(e.target.value)}
+							onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+								setUsername(e.target.value)
+							}
 							required
 						/>
 					</div>
+
 					<div className="input-group">
 						<label htmlFor="password">Password:</label>
 						<input
 							type="password"
 							id="password"
 							value={password}
-							onChange={(e) => setPassword(e.target.value)}
+							onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+								setPassword(e.target.value)
+							}
 							required
 						/>
 					</div>
+
 					{error && <p className="error">{error}</p>}
-					<button type="submit" className="submit-btn">Login</button>
+
+					<button type="submit" className="submit-btn">
+						Login
+					</button>
+
 					<button
 						type="button"
 						className="submit-btn"
@@ -76,7 +80,7 @@ const LoginPage = () => {
 						Register
 					</button>
 				</form>
-			</div>
+			</LoginPageLayout>
 		</div>
 	);
 };

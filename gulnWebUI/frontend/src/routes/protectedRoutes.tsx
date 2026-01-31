@@ -1,7 +1,12 @@
 import { Navigate } from "react-router-dom";
-import useAuth from "./useAuth";
+import { ReactNode } from "react";
+import useAuth from "../components/auth/useAuth";
 
-const ProtectedRoute = ({ children }) => {
+interface ProtectedRoutesProps {
+    children: ReactNode;
+}
+
+const ProtectedRoute = ({ children }: ProtectedRoutesProps ) => {
     const { authenticated, loading } = useAuth();
 
     if (loading) return <div>Loading...</div>;
