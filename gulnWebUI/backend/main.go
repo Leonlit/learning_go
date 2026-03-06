@@ -1,9 +1,11 @@
 package main
 
 import (
+	"gulnManagement/gulnWebUI/internal/handler"
 	"gulnManagement/gulnWebUI/internal/logs"
 	"gulnManagement/gulnWebUI/internal/repository"
 	"gulnManagement/gulnWebUI/internal/routes"
+	"gulnManagement/gulnWebUI/internal/service"
 	"log"
 	"net/http"
 
@@ -31,14 +33,18 @@ func main() {
 	repository.InitDB()
 
 	router := mux.NewRouter()
-
 	corsRouter := enableCORS(router)
 
-	// Register routes
-	routes.RegisterAuthRoutes(router)
-	routes.RegisterProjectRoutes(router)
+	// --- build dependencies ---
+	userRepo := repository.NewUserRepository(repository.DBObj)
 
-	log.Println("Using port 8080")
+	authService := service.NewAuthService(userRepo)
+	authHandler := handler.NewAuthHandler(authService)
+
+	// --- register routes ---
+	routes.RegisterAuthRoutes(router, authHandler)
+	routes.RegisterProjectRoutes(router) // unchanged for now
+
 	log.Println("Server running on: http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", corsRouter))
 }

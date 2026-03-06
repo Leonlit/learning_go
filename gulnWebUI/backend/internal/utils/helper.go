@@ -7,9 +7,9 @@ import (
 	"net/http"
 )
 
-type Response struct {
+type ErrorResponse struct {
+	Error   string `json:"error"`
 	Message string `json:"message"`
-	Status  int    `json:"status"`
 }
 
 func CheckAddressValid(addr string) bool {
@@ -38,23 +38,12 @@ func CheckAddressValid(addr string) bool {
 	return false
 }
 
-func SendJSONResponse(w http.ResponseWriter, message string, status int) {
-	// Create the response object
-	response := Response{
-		Message: message,
-		Status:  status,
-	}
-
-	// Set the response header to indicate that the content is JSON
+func SendJSONResponse(w http.ResponseWriter, payload interface{}, status int) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 
-	// Marshal the response object into JSON
-	err := json.NewEncoder(w).Encode(response)
-	if err != nil {
-		log.Printf("Error encoding response: %v", err)
-		http.Error(w, "Unable to encode response", http.StatusInternalServerError)
-		return
+	if err := json.NewEncoder(w).Encode(payload); err != nil {
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 	}
 }
 

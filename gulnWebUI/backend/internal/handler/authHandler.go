@@ -3,69 +3,39 @@ package handler
 import (
 	"encoding/json"
 	"errors"
-	databases "gulnManagement/gulnWebUI/internal/repository"
+	"gulnManagement/gulnWebUI/internal/auth"
+	"gulnManagement/gulnWebUI/internal/repository"
+	service "gulnManagement/gulnWebUI/internal/service"
 	"gulnManagement/gulnWebUI/internal/utils"
 	"log"
 	"net/http"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"golang.org/x/crypto/bcrypt"
 )
 
-type Claims struct {
-	UserUUID string
-	jwt.RegisteredClaims
+type AuthHandler struct {
+	authService *service.AuthService
 }
 
-var secretKey = utils.LoadEnv("JWT_SECRET_KEY")
+func NewAuthHandler(authService *service.AuthService) *AuthHandler {
+	return &AuthHandler{authService: authService}
+}
 
-func hashPassword(password string) string {
-	// Generate a hashed password with bcrypt
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	if err != nil {
-		log.Printf("failed to hash password: %v", err)
-		return ""
+func (h *AuthHandler) LoginAuthHandler(w http.ResponseWriter, r *http.Request) {
+	var req struct {
+		Username string `json:"username"`
+		Password string `json:"password"`
 	}
-	return string(hashedPassword)
-}
 
-// Handle login operation
-func LoginHandler(w http.ResponseWriter, r *http.Request) {
-	var user map[string]string
-
-	// Parse the login credentials from the request body
-	err := json.NewDecoder(r.Body).Decode(&user)
-	if err != nil {
-		log.Println("Invalid request body!")
-		log.Println(err)
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
 
-	username := user["username"]
-	password := user["password"]
-
-	// Validate user credentials (e.g., check against a database)
-	if !databases.VerifyUserCredentials(username, password) {
+	token, err := h.authService.Login(r.Context(), req.Username, req.Password)
+	if errors.Is(err, service.ErrInvalidCredentials) {
 		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
-		return
-	}
-
-	uuid, err := databases.GetUserUUID(username)
-	if err != nil {
-		log.Println("Error generating token!")
-		log.Println(err)
-		http.Error(w, "Error generating token", http.StatusInternalServerError)
-		return
-	}
-
-	// Generate JWT token
-	token, err := generateJWT(uuid)
-	if err != nil {
-		log.Println("Error generating token!")
-		log.Println(err)
-		http.Error(w, "Error generating token", http.StatusInternalServerError)
 		return
 	}
 
@@ -73,89 +43,43 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		Name:     "auth_token",
 		Value:    token,
 		HttpOnly: true,
-		Secure:   false, // Only for HTTPS //TODO: Turn on cookies Secure flag during prods
+		Secure:   false,
 		Path:     "/",
 		SameSite: http.SameSiteLaxMode,
 	})
+
 	utils.SendJSONResponse(w, "User valid", http.StatusOK)
 }
 
-func RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
-	var user map[string]string
+func (h *AuthHandler) RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
 
-	// Parse the login credentials from the request body
-	err := json.NewDecoder(r.Body).Decode(&user)
-	if err != nil {
-		log.Println("Invalid request body!")
-		log.Println(err)
-		http.Error(w, "Invalid request body!", http.StatusBadRequest)
+	var req struct {
+		Username       string `json:"username"`
+		Password       string `json:"password"`
+		RepeatPassword string `json:"repeatPassword"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
 
-	username := user["username"]
-	password := user["password"]
-	repeatPassword := user["repeatPassword"]
-
-	if repeatPassword != password {
-		http.Error(w, "Different password used!", http.StatusBadRequest)
-		return
-	}
-
-	userExists, err := databases.CheckUsernameExists(username)
-
-	if err != nil {
-		http.Error(w, "Unexpected Error!", http.StatusInternalServerError)
-		return
-	}
-
-	if userExists {
-		http.Error(w, "Invalid request body!", http.StatusBadRequest)
-		return
-	}
-
-	passwordHash := hashPassword(password)
-
-	if passwordHash == "" {
-		http.Error(w, "Unexpected Error!", http.StatusInternalServerError)
-		return
-	}
-
-	created, err := databases.CreateNewUser(username, passwordHash)
-
-	if err != nil {
-		http.Error(w, "Unexpected Error!", http.StatusInternalServerError)
-		return
-	}
-
-	if created == "" {
-		log.Println("No DB entry created! Did not register new user!")
-		http.Error(w, "Unexpected Error!", http.StatusInternalServerError)
+	err := h.authService.Register(r.Context(), req.Username, req.Password, req.RepeatPassword)
+	if errors.Is(err, service.ErrInvalidCredentials) {
+		http.Error(w, "Invalid credentials", http.StatusBadRequest)
 		return
 	}
 
 	utils.SendJSONResponse(w, "User registered successfully", http.StatusCreated)
 }
 
-func generateJWT(uuid string) (string, error) {
-	claims := Claims{
-		UserUUID: uuid,
-		RegisteredClaims: jwt.RegisteredClaims{
-			Issuer:    "nmap-management",
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(8 * time.Hour)), // Expiry set to 8 hour
-		},
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString([]byte(secretKey))
-}
-
-func ParseJWT(tokenString string) (*Claims, error) {
-	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+func ParseJWT(tokenString string) (*auth.Claims, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &auth.Claims{}, func(token *jwt.Token) (interface{}, error) {
 		// Make sure the token method is what we expect (HS256)
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("unexpected signing method")
 		}
-		return []byte(secretKey), nil
+		return []byte(repository.JWTSecretKey), nil
 	})
 
 	if err != nil {
@@ -165,18 +89,18 @@ func ParseJWT(tokenString string) (*Claims, error) {
 	}
 
 	// If token is valid, return the claims
-	if claims, ok := token.Claims.(*Claims); ok && token.Valid {
+	if claims, ok := token.Claims.(*auth.Claims); ok && token.Valid {
 		return claims, nil
 	}
 
 	return nil, errors.New("invalid token")
 }
 
-func AuthMe(w http.ResponseWriter, r *http.Request) {
+func (h *AuthHandler) AuthMe(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func HandleLogout(w http.ResponseWriter, r *http.Request) {
+func (h *AuthHandler) LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	// Remove the JWT by setting the cookie with the same name and an expired date
 	http.SetCookie(w, &http.Cookie{
 		Name:     "auth_token",         // Same name as the cookie you set

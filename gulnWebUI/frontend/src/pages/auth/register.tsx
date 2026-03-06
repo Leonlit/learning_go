@@ -14,28 +14,30 @@ const RegisterPage = (): JSX.Element => {
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
 		e.preventDefault();
 
-		fetch('http://localhost:8080/register', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({ username: username, password: password, repeatPassword: repeatPassword }),
+		fetch("http://localhost:8080/register", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                username: username,
+                password: password,
+                repeatPassword: repeatPassword,
+            }),
+        }).then((response) => {
+			if (!response.ok) {
+				throw new Error(`HTTP error! Status: ${response.status}`);
+			}
+
+			if (response.status === 201) {
+				navigate("/registerSuccess");
+			}
+
+			return response.json();
 		})
-			.then((response) => {
-				if (!response.ok) {
-					throw new Error(`HTTP error! Status: ${response.status}`);
-				}
-				return response.json();
-			})
-			.then((data) => {
-				console.log(data);
-				if (data.status == 201) {
-					navigate("/registerSuccess")
-				}
-			})
-			.catch((error) => {
-				console.error('Error fetching data:', error);
-			});
+		.then((data) => {
+			console.log(data);
+		});
 	};
 
 	return (

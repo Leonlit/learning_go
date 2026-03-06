@@ -1,35 +1,47 @@
 package repository
 
 import (
+	"context"
 	"database/sql"
+	"gulnManagement/gulnWebUI/internal/utils"
 	"log"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
-func VerifyUserCredentials(username, password string) bool {
+type UserRepository struct {
+	db *sql.DB
+}
+
+var JWTSecretKey = utils.LoadEnv("JWT_SECRET_KEY")
+
+func NewUserRepository(db *sql.DB) *UserRepository {
+	return &UserRepository{db: db}
+}
+
+func (r *UserRepository) VerifyUserCredentials(ctx context.Context, username, password string) (string, error) {
 	var storedHash string
+	var userUUID string
 
 	query := `
-		SELECT password_hash FROM users WHERE username = $1
+		SELECT uuid, password_hash FROM users WHERE username = $1
 	`
-	err := DBObj.QueryRow(query, username).Scan(&storedHash)
+	err := r.db.QueryRowContext(ctx, query, username).Scan(&userUUID, &storedHash)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			log.Println("username not found")
-			return false
+			return "", err
 		}
 		log.Println(err)
-		return false // other DB error
+		return "", err // other DB error
 	}
 
-	// Compare provided password with stored hash
 	if err := bcrypt.CompareHashAndPassword([]byte(storedHash), []byte(password)); err != nil {
 		log.Println("invalid password")
-		return false
+		return "", err
 	}
 
-	return true // success
+	return userUUID, nil
 }
 
 func CheckUsernameExists(username string) (bool, error) {
@@ -54,7 +66,7 @@ func CheckUsernameExists(username string) (bool, error) {
 
 func GetUserUUID(username string) (string, error) {
 	// Prepare a SQL query to check if the username exists
-	query := "SELECT user_uuid FROM users WHERE username = $1"
+	query := "SELECT uuid FROM users WHERE username = $1"
 
 	// Execute the query and scan the result into a variable
 	var uuid string
@@ -73,9 +85,9 @@ func GetUserUUID(username string) (string, error) {
 func CreateNewUser(username, passwordHash string) (string, error) {
 	var userUUID string
 	query := `
-        INSERT INTO users (username, password_hash, user_uuid)
+        INSERT INTO users (username, password_hash, uuid)
         VALUES ($1, $2, uuid_generate_v4())
-        RETURNING user_uuid
+        RETURNING uuid
     `
 	err := DBObj.QueryRow(query, username, passwordHash).Scan(&userUUID)
 	if err != nil {
