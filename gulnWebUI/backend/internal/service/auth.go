@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"errors"
 	"gulnManagement/gulnWebUI/internal/auth"
 	"gulnManagement/gulnWebUI/internal/repository"
 	"gulnManagement/gulnWebUI/internal/utils"
@@ -17,21 +16,19 @@ type AuthService struct {
 	userRepo *repository.UserRepository
 }
 
-var ErrInvalidCredentials = errors.New("invalid username or password")
-
 func NewAuthService(userRepo *repository.UserRepository) *AuthService {
 	return &AuthService{userRepo: userRepo}
 }
 
-func (s *AuthService) Login(ctx context.Context, username, password string) (string, error) {
+func (s *AuthService) Login(ctx context.Context, username, password string) (string, *utils.AppError) {
 	userID, err := s.userRepo.VerifyUserCredentials(ctx, username, password)
 	if err != nil {
-		return "", ErrInvalidCredentials
+		return "", utils.InternalError("Error When Logging In", err)
 	}
 
 	token, err := generateJWT(userID)
 	if err != nil {
-		return "", err
+		return "", utils.InternalError("Error When Logging In", err)
 	}
 
 	return token, nil
@@ -63,37 +60,41 @@ func hashPassword(password string) string {
 func (s *AuthService) Register(ctx context.Context, username, password, repeatPassword string) error {
 
 	if repeatPassword != password {
-		return &utils.AppError{
-			Code:    "PASSWORD_MISMATCH",
-			Message: "Passwords do not match",
-			Status:  400,
-		}
+		return utils.NewAppError(
+			"PASSWORD_MISMATCH",
+			"Passwords do not match",
+			400,
+			nil,
+		)
 	}
 
 	userExists, err := repository.CheckUsernameExists(username)
 	if err != nil {
-		return &utils.AppError{
-			Code:    "DB_ERROR",
-			Message: "Failed to check username",
-			Status:  500,
-		}
+		return utils.NewAppError(
+			"DB_ERROR",
+			"Failed to check username",
+			500,
+			nil,
+		)
 	}
 
 	if userExists {
-		return &utils.AppError{
-			Code:    "USERNAME_EXISTS",
-			Message: "Username already exists",
-			Status:  400,
-		}
+		return utils.NewAppError(
+			"USERNAME_EXISTS",
+			"Username already exists",
+			400,
+			nil,
+		)
 	}
 
 	passwordHash := hashPassword(password)
 	if passwordHash == "" {
-		return &utils.AppError{
-			Code:    "PASSWORD_HASH_FAILED",
-			Message: "Failed to hash password",
-			Status:  500,
-		}
+		return utils.NewAppError(
+			"PASSWORD_HASH_FAILED",
+			"Failed to hash password",
+			500,
+			nil,
+		)
 	}
 
 	created, err := repository.CreateNewUser(username, passwordHash)

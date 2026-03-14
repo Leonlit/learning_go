@@ -1,34 +1,57 @@
 package utils
 
-import (
-	"errors"
-	"net/http"
-)
+import "log"
 
 type AppError struct {
-	Code    string // machine-readable
-	Message string // client-readable
-	Status  int    // HTTP status code
+	Code    string `json:"code"`
+	Message string `json:"message"`
+	Status  int    `json:"-"`
+	Err     error  `json:"-"`
 }
 
 func (e *AppError) Error() string {
 	return e.Message
 }
 
-func WriteError(w http.ResponseWriter, err error) {
-	var appErr *AppError
+func BadRequest(code, msg string) *AppError {
+	return NewAppError(
+		code,
+		msg,
+		400,
+		nil,
+	)
+}
 
-	if errors.As(err, &appErr) {
-		SendJSONResponse(w, map[string]interface{}{
-			"error":   appErr.Code,
-			"message": appErr.Message,
-		}, appErr.Status)
-		return
+func Unauthorized(msg string, err error) *AppError {
+	return NewAppError(
+		"UNAUTHORIZED",
+		msg,
+		401,
+		err,
+	)
+}
+
+func InternalError(msg string, err error) *AppError {
+	return NewAppError(
+		"INTERNAL_SERVER_ERROR",
+		msg,
+		500,
+		err,
+	)
+}
+
+func NewAppError(code string, message string, status int, err error) *AppError {
+	appErr := &AppError{
+		Code:    code,
+		Message: message,
+		Status:  status,
+		Err:     err,
 	}
 
-	// fallback: unexpected error
-	SendJSONResponse(w, map[string]interface{}{
-		"error":   "INTERNAL_SERVER_ERROR",
-		"message": "Something went wrong",
-	}, http.StatusInternalServerError)
+	// Run logic here
+	if err != nil {
+		log.Println("AppError created:", code, message, status, err)
+	}
+
+	return appErr
 }

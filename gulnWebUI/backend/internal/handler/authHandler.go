@@ -34,9 +34,9 @@ func (h *AuthHandler) LoginAuthHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	token, err := h.authService.Login(r.Context(), req.Username, req.Password)
-	if errors.Is(err, service.ErrInvalidCredentials) {
-		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
-		return
+
+	if err != nil {
+		utils.SendJSONResponse(w, err, err.Status)
 	}
 
 	http.SetCookie(w, &http.Cookie{
@@ -59,14 +59,16 @@ func (h *AuthHandler) RegisterUserHandler(w http.ResponseWriter, r *http.Request
 		RepeatPassword string `json:"repeatPassword"`
 	}
 
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
-		return
-	}
-
 	err := h.authService.Register(r.Context(), req.Username, req.Password, req.RepeatPassword)
-	if errors.Is(err, service.ErrInvalidCredentials) {
-		http.Error(w, "Invalid credentials", http.StatusBadRequest)
+	if err != nil {
+
+		var appErr *utils.AppError
+		if errors.As(err, &appErr) {
+			utils.SendJSONResponse(w, appErr, appErr.Status)
+			return
+		}
+
+		utils.SendJSONResponse(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
