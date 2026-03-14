@@ -12,6 +12,21 @@ import (
 	"github.com/gorilla/mux"
 )
 
+func GetProjectCount(w http.ResponseWriter, r *http.Request) {
+
+	userUUID := r.Context().Value("UserUUID").(string)
+
+	projectCounts, err := databases.GetProjectCount(userUUID)
+	if err != nil {
+		http.Error(w, "Error fetching project list", http.StatusInternalServerError)
+		log.Println("GetProjectsList error:", err)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(projectCounts)
+}
+
 func CreateNewProjects(w http.ResponseWriter, r *http.Request) {
 
 	projectName := r.FormValue("projectName")

@@ -74,6 +74,24 @@ type Scripts struct {
 	ScriptOutput *string `json:"script_output"`
 }
 
+func GetProjectCount(userUUID string) (int, error) {
+	query := `
+		SELECT COUNT(project_uuid)
+		FROM projects
+		WHERE user_uuid = $1
+	`
+
+	var count int
+
+	err := DBObj.QueryRow(query, userUUID).Scan(&count)
+	if err != nil {
+		log.Println("Query error:", err)
+		return 0, err
+	}
+
+	return count, nil
+}
+
 func GetProjectList(userUUID string, page int) ([]Project, error) {
 	offset := (page - 1) * 10
 	query := `

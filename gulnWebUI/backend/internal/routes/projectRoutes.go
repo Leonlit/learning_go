@@ -11,6 +11,7 @@ func RegisterProjectRoutes(router *mux.Router) {
 	subRoute := router.PathPrefix("/projects").Subrouter()
 	subRoute.Use(middlewares.AuthenticateJWT)
 
+	subRoute.HandleFunc("/count", handlers.CreateNewProjects).Methods("GET")
 	subRoute.HandleFunc("/new", handlers.CreateNewProjects).Methods("POST")
 	subRoute.HandleFunc("/list/{page}", handlers.GetProjectsList).Methods("GET")
 	subRoute.HandleFunc("/info/{projectUUID}", handlers.GetProjectInfo).Methods("GET")
