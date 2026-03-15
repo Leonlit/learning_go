@@ -1,9 +1,19 @@
 package repository
 
 import (
+	"context"
+	"database/sql"
 	"log"
 	"time"
 )
+
+type ProjectRepository struct {
+	db *sql.DB
+}
+
+func NewProjectRepository(db *sql.DB) *ProjectRepository {
+	return &ProjectRepository{db: db}
+}
 
 type Project struct {
 	ProjectUUID    *string    `json:"project_uuid"`
@@ -74,16 +84,16 @@ type Scripts struct {
 	ScriptOutput *string `json:"script_output"`
 }
 
-func GetProjectCount(userUUID string) (int, error) {
+func (r *ProjectRepository) GetProjectCount(ctx context.Context, userUUID string) (int, error) {
 	query := `
-		SELECT COUNT(project_uuid)
+		SELECT COUNT(uuid)
 		FROM projects
-		WHERE user_uuid = $1
+		WHERE person_in_charge_uuid = $1
 	`
 
 	var count int
 
-	err := DBObj.QueryRow(query, userUUID).Scan(&count)
+	err := r.db.QueryRowContext(ctx, query, userUUID).Scan(&count)
 	if err != nil {
 		log.Println("Query error:", err)
 		return 0, err
@@ -92,68 +102,76 @@ func GetProjectCount(userUUID string) (int, error) {
 	return count, nil
 }
 
-func GetProjectList(userUUID string, page int) ([]Project, error) {
+func (r *ProjectRepository) GetProjectList(ctx context.Context, userUUID string, page int) ([]Project, error) {
 	offset := (page - 1) * 10
 	query := `
-		SELECT project_uuid, project_name, project_created FROM projects WHERE user_uuid = $1 LIMIT 10 OFFSET $2
+		SELECT uuid, project_name, created_time FROM projects WHERE person_in_charge_uuid = $1 LIMIT 10 OFFSET $2
 	`
-	rows, err := DBObj.Query(query, userUUID, offset)
+	rows, err := r.db.QueryContext(ctx, query, userUUID, offset)
 	if err != nil {
 		log.Println("Query error:", err)
-		return nil, err
+		return []Project{}, err
 	}
 	defer rows.Close()
+
 	var projects []Project
+
 	for rows.Next() {
 		var project Project
 		if err := rows.Scan(&project.ProjectUUID, &project.ProjectName, &project.ProjectCreated); err != nil {
-			return nil, err
+			return []Project{}, err
 		}
 		projects = append(projects, project)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, err
+		return []Project{}, err
 	}
 
 	return projects, nil
 }
 
-func CreateNewProject(userUUID, projectName string) string {
+func (r *ProjectRepository) CreateNewProject(ctx context.Context, userUUID, projectName string) (string, error) {
 	var projectUUID string
 	query := `
-		INSERT INTO projects (project_uuid, user_uuid, project_name, project_created)
-		VALUES (uuid_generate_v4(), $1, $2, $3)
-		RETURNING project_uuid
+		INSERT INTO projects (uuid, person_in_charge_uuid, project_name)
+		VALUES (uuid_generate_v4(), $1, $2)
+		RETURNING uuid
 	`
 
-	err := DBObj.QueryRow(query,
+	err := r.db.QueryRowContext(ctx, query,
 		userUUID,
 		projectName,
-		time.Now(),
 	).Scan(&projectUUID)
+
 	if err != nil {
-		log.Fatal(err)
-		return "Error"
+		log.Println("Query error:", err)
+		return "", err
 	}
-	return projectUUID
+	return projectUUID, nil
 }
 
-func GetProjectInfo(userUUID, projectUUID string) (Project, error) {
+func (r *ProjectRepository) GetProjectInfo(
+	ctx context.Context,
+	userUUID, projectUUID string,
+) (Project, error) {
+
 	query := `
-		SELECT project_uuid, project_name, project_created
+		SELECT uuid, project_name, created_time
 		FROM projects
-		WHERE project_uuid = $1 AND user_uuid = $2
+		WHERE uuid = $1 AND person_in_charge_uuid = $2
 	`
 
 	var project Project
-	err := DBObj.QueryRow(query, projectUUID, userUUID).Scan(
+
+	err := r.db.QueryRowContext(ctx, query, projectUUID, userUUID).Scan(
 		&project.ProjectUUID,
 		&project.ProjectName,
 		&project.ProjectCreated,
 	)
+
 	if err != nil {
-		return Project{}, err // return empty project + error
+		return Project{}, err
 	}
 
 	return project, nil

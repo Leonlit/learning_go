@@ -37,13 +37,22 @@ func main() {
 
 	// --- build dependencies ---
 	userRepo := repository.NewUserRepository(repository.DBObj)
+	projectRepo := repository.NewProjectRepository(repository.DBObj)
+	assessmentRepo := repository.NewAssessmentRepository(repository.DBObj)
 
 	authService := service.NewAuthService(userRepo)
 	authHandler := handler.NewAuthHandler(authService)
 
+	projectService := service.NewProjectService(projectRepo)
+	projectHandler := handler.NewProjectHandler(projectService)
+
+	assessmentService := service.NewAssessmentService(assessmentRepo)
+	assessmentHandler := handler.NewAssessmentHandler(assessmentService)
+
 	// --- register routes ---
 	routes.RegisterAuthRoutes(router, authHandler)
-	routes.RegisterProjectRoutes(router) // unchanged for now
+	routes.RegisterProjectRoutes(router, projectHandler)
+	routes.RegisterAssessmentRoutes(router, assessmentHandler)
 
 	log.Println("Server running on: http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", corsRouter))

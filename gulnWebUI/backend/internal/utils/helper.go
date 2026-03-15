@@ -40,11 +40,15 @@ func CheckAddressValid(addr string) bool {
 
 func SendJSONResponse(w http.ResponseWriter, payload interface{}, status int) {
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(status)
 
-	if err := json.NewEncoder(w).Encode(payload); err != nil {
+	data, err := json.Marshal(payload)
+	if err != nil {
 		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+		return
 	}
+
+	w.WriteHeader(status)
+	w.Write(data)
 }
 
 func GetJWTFromCookie(w http.ResponseWriter, r *http.Request) string {
