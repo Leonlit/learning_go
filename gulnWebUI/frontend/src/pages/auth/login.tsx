@@ -13,7 +13,7 @@ const LoginPage = (): JSX.Element => {
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
 		e.preventDefault();
 
-		fetch("http://localhost:8080/login", {
+		fetch("http://localhost:8080/api/login", {
 			method: "POST",
 			credentials: "include",
 			headers: {

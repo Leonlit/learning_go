@@ -7,7 +7,7 @@ const useAuth = () => {
     useEffect(() => {
         const check = async () => {
             try {
-                const res = await fetch("http://localhost:8080/auth/me", {
+                const res = await fetch("http://localhost:8080/api/auth/me", {
                     credentials: "include", // this sends the cookie
                 });
                 setAuthenticated(res.ok);

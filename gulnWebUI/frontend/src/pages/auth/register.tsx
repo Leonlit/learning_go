@@ -14,7 +14,7 @@ const RegisterPage = (): JSX.Element => {
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>): void => {
 		e.preventDefault();
 
-		fetch("http://localhost:8080/register", {
+		fetch("http://localhost:8080/api/register", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

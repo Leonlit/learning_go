@@ -18,14 +18,14 @@ const UserDashboard = () => {
         const fetchProjectsAndAssessmentCount = async () => {
             try {
                 const projectRes = await fetch(
-                    "http://localhost:8080/core/projects/count",
+                    "http://localhost:8080/api/projects/count",
                     {
                         credentials: "include", // Send JWT cookie
                     },
                 );
 
                 const assessmentRes = await fetch(
-                    "http://localhost:8080/core/projects/count",
+                    "http://localhost:8080/api/assessments/count",
                     {
                         credentials: "include", // Send JWT cookie
                     },

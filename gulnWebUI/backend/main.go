@@ -49,10 +49,13 @@ func main() {
 	assessmentService := service.NewAssessmentService(assessmentRepo)
 	assessmentHandler := handler.NewAssessmentHandler(assessmentService)
 
+	// API prefix
+	apiRouter := router.PathPrefix("/api").Subrouter()
+
 	// --- register routes ---
-	routes.RegisterAuthRoutes(router, authHandler)
-	routes.RegisterProjectRoutes(router, projectHandler)
-	routes.RegisterAssessmentRoutes(router, assessmentHandler)
+	routes.RegisterAuthRoutes(apiRouter, authHandler)
+	routes.RegisterProjectRoutes(apiRouter, projectHandler)
+	routes.RegisterAssessmentRoutes(apiRouter, assessmentHandler)
 
 	log.Println("Server running on: http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", corsRouter))

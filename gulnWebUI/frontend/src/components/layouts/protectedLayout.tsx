@@ -5,7 +5,7 @@ interface ProtectedLayoutProps {
 }
 
 const handleLogout = async (): Promise<void> => {
-	await fetch("http://localhost:8080/logout", {
+	await fetch("http://localhost:8080/api/logout", {
 		method: "POST",
 		credentials: "include"
 	});
