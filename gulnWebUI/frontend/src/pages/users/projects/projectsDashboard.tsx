@@ -3,22 +3,28 @@ import { useNavigate } from "react-router-dom";
 import HeadMetadata from "../../../components/heads/headMetadata";
 import ProtectedLayout from "../../../components/layouts/protectedLayout";
 
+type Project = {
+	project_uuid: string
+	project_name: string
+	project_created: string
+}
+
 const ProjectDashboard = () => {
 	const navigate = useNavigate();
-	const [projects, setprojects] = useState([]);
+	const [projects, setProjects] = useState<Project[]>([])
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState("");
 
-	const navigateToProjectInfo = (project) => {
+	const navigateToProjectInfo = (project: Project) => {
 		navigate("/users/projects/info/" + project.project_uuid, {
 			state: { projectUUID: project.project_uuid, projectName: project.project_name }
 		})
 	}
 
 	useEffect(() => {
-		const fetchprojects = async () => {
+		const fetchProjectList = async () => {
 			try {
-				const res = await fetch("http://localhost:8080/projects/list/1", {
+				const res = await fetch("http://localhost:8080/api/projects/list/1", {
 					credentials: "include", // Send JWT cookie
 				});
 
@@ -26,16 +32,18 @@ const ProjectDashboard = () => {
 					throw new Error("Failed to fetch projects");
 				}
 
-				const data = await res.json();
-				setprojects(data);
+				const data: Project[] = await res.json();
+				setProjects(data);
 			} catch (err) {
-				setError(err.message);
+				if (err instanceof Error) {
+                    setError(err.message);
+                }
 			} finally {
 				setLoading(false);
 			}
 		};
 
-		fetchprojects();
+		fetchProjectList();
 	}, []);
 
 	if (loading) return <p>Loading...</p>;
@@ -44,10 +52,12 @@ const ProjectDashboard = () => {
 	return (
 		<ProtectedLayout>
 			<HeadMetadata title={"Project Dashboard"} />
-			<button><a href="/users/projects/new">Create New Project</a></button>
+			<button onClick={() => navigate("/users/projects/new")}>
+				Create New Project
+			</button>
 			{<div className="dashboard">
 				<h2>Project Dashboard</h2>
-				{!projects || projects.length === 0 ? (
+				{projects.length === 0 ? (
 					<p>No Projects.</p>
 				) : (
 					<table className="styled-table">

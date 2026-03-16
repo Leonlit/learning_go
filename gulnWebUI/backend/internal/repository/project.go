@@ -114,7 +114,7 @@ func (r *ProjectRepository) GetProjectList(ctx context.Context, userUUID string,
 	}
 	defer rows.Close()
 
-	var projects []Project
+	projects := []Project{}
 
 	for rows.Next() {
 		var project Project

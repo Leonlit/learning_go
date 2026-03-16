@@ -7,6 +7,10 @@ type DashboardData = {
     assessmentCount: number;
 };
 
+type CountResponse = {
+    count: number
+}
+
 const UserDashboard = () => {
     const [userDashboard, setUserDashboard] = useState<DashboardData | null>(
         null,
@@ -35,8 +39,8 @@ const UserDashboard = () => {
                     throw new Error("Failed to get core info");
                 }
 
-                const projectCount = await projectRes.json();
-                const assessmentCount = await assessmentRes.json();
+                const projectCount: CountResponse = await projectRes.json();
+                const assessmentCount: CountResponse = await assessmentRes.json();
                 const data = {
                     projectCount: projectCount.count,
                     assessmentCount: assessmentCount.count,
