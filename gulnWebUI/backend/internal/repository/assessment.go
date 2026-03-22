@@ -16,9 +16,10 @@ func NewAssessmentRepository(db *sql.DB) *AssessmentRepository {
 }
 
 type Assessment struct {
-	AssessmentUUID    *string    `json:"project_uuid"`
-	AssessmentName    *string    `json:"project_name"`
-	AssessmentCreated *time.Time `json:"project_created"`
+	AssessmentUUID          *string    `json:"uuid"`
+	AssessmentName          *string    `json:"name"`
+	AssessmentStartDateTime *time.Time `json:"start_datetime"`
+	AssessmentEndDateTime   *time.Time `json:"end_datetime"`
 }
 
 func (r *AssessmentRepository) GetAssessmentCount(ctx context.Context, userUUID string) (int, error) {

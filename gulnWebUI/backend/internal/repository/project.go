@@ -16,9 +16,10 @@ func NewProjectRepository(db *sql.DB) *ProjectRepository {
 }
 
 type Project struct {
-	ProjectUUID    *string    `json:"project_uuid"`
-	ProjectName    *string    `json:"project_name"`
-	ProjectCreated *time.Time `json:"project_created"`
+	ProjectUUID      *string    `json:"project_uuid"`
+	ProjectName      *string    `json:"project_name"`
+	ProjectCreatedAt *time.Time `json:"project_created_at"`
+	ProjectUpdatedAt *time.Time `json:"project_updated_at"`
 }
 
 type ScanAndHostsCount struct {
@@ -105,7 +106,7 @@ func (r *ProjectRepository) GetProjectCount(ctx context.Context, userUUID string
 func (r *ProjectRepository) GetProjectList(ctx context.Context, userUUID string, page int) ([]Project, error) {
 	offset := page * 10
 	query := `
-		SELECT uuid, project_name, created_time FROM projects WHERE person_in_charge_uuid = $1 LIMIT 10 OFFSET $2
+		SELECT uuid, name, created_at, updated_at FROM projects WHERE person_in_charge_uuid = $1 LIMIT 10 OFFSET $2
 	`
 	rows, err := r.db.QueryContext(ctx, query, userUUID, offset)
 	if err != nil {
@@ -118,7 +119,7 @@ func (r *ProjectRepository) GetProjectList(ctx context.Context, userUUID string,
 
 	for rows.Next() {
 		var project Project
-		if err := rows.Scan(&project.ProjectUUID, &project.ProjectName, &project.ProjectCreated); err != nil {
+		if err := rows.Scan(&project.ProjectUUID, &project.ProjectName, &project.ProjectCreatedAt, &project.ProjectUpdatedAt); err != nil {
 			return []Project{}, err
 		}
 		projects = append(projects, project)
@@ -134,7 +135,7 @@ func (r *ProjectRepository) GetProjectList(ctx context.Context, userUUID string,
 func (r *ProjectRepository) CreateNewProject(ctx context.Context, userUUID, projectName string) (string, error) {
 	var projectUUID string
 	query := `
-		INSERT INTO projects (uuid, person_in_charge_uuid, project_name)
+		INSERT INTO projects (uuid, person_in_charge_uuid, name)
 		VALUES (uuid_generate_v4(), $1, $2)
 		RETURNING uuid
 	`
@@ -157,7 +158,7 @@ func (r *ProjectRepository) GetProjectInfo(
 ) (Project, error) {
 
 	query := `
-		SELECT uuid, project_name, created_time
+		SELECT uuid, name, created_at, updated_at
 		FROM projects
 		WHERE uuid = $1 AND person_in_charge_uuid = $2
 	`
@@ -167,7 +168,8 @@ func (r *ProjectRepository) GetProjectInfo(
 	err := r.db.QueryRowContext(ctx, query, projectUUID, userUUID).Scan(
 		&project.ProjectUUID,
 		&project.ProjectName,
-		&project.ProjectCreated,
+		&project.ProjectCreatedAt,
+		&project.ProjectUpdatedAt,
 	)
 
 	if err != nil {

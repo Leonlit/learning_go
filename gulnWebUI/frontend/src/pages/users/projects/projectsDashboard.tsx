@@ -64,6 +64,7 @@ const ProjectDashboard = () => {
             <ListingWidgetLayout
                 data={projects}
                 onNewClick={() => navigate("/users/projects/new")}
+                newClickLabel="Add New Project"
                 onSearch={setFilteredProjects}
                 paginationAPI="http://localhost:8080/api/projects/list/"
             >

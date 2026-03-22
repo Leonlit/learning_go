@@ -1,0 +1,168 @@
+-- Enable UUID generation
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- USERS
+CREATE TABLE users (
+    uuid UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    username TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+-- PROJECT STATUSES
+CREATE TABLE project_statuses (
+    uuid UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name TEXT NOT NULL,
+    description TEXT
+);
+
+
+-- PROJECTS
+CREATE TABLE projects (
+    uuid UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    person_in_charge_uuid UUID,
+    project_status_uuid UUID,
+
+    FOREIGN KEY (person_in_charge_uuid)
+        REFERENCES users(uuid)
+        ON DELETE SET NULL,
+
+    FOREIGN KEY (project_status_uuid)
+        REFERENCES project_statuses(uuid)
+);
+
+-- TEAM MEMBERS
+CREATE TABLE project_team_members (
+    uuid UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name TEXT NOT NULL,
+    department TEXT NOT NULL,
+    role TEXT NOT NULL
+);
+
+-- PROJECT TEAMS
+CREATE TABLE project_teams (
+    project_uuid UUID,
+    team_member_uuid UUID,
+
+    PRIMARY KEY (project_uuid, team_member_uuid),
+
+    FOREIGN KEY (project_uuid)
+        REFERENCES projects(uuid)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (team_member_uuid)
+        REFERENCES project_team_members(uuid)
+        ON DELETE CASCADE
+);
+
+-- ASSESSMENT TYPES
+CREATE TABLE assessment_types (
+    uuid UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name TEXT NOT NULL,
+    description TEXT
+);
+
+
+-- ASSESSMENT PHASES
+CREATE TABLE assessment_phases (
+    uuid UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name TEXT NOT NULL,
+    description TEXT
+);
+
+
+-- ASSESSMENTS
+CREATE TABLE assessments (
+    uuid UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name TEXT NOT NULL,
+
+    start_datetime TIMESTAMP,
+    end_datetime TIMESTAMP,
+
+    project_uuid UUID,
+    type UUID,
+    phase UUID,
+    created_by UUID,
+
+    FOREIGN KEY (project_uuid)
+        REFERENCES projects(uuid)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (type)
+        REFERENCES assessment_types(uuid),
+
+    FOREIGN KEY (phase)
+        REFERENCES assessment_phases(uuid),
+
+    FOREIGN KEY (created_by)
+        REFERENCES users(uuid)
+);
+
+
+-- ASSESSMENT TEAMS
+CREATE TABLE assessment_teams (
+    assessment_uuid UUID,
+    user_uuid UUID,
+
+    PRIMARY KEY (assessment_uuid, user_uuid),
+
+    FOREIGN KEY (assessment_uuid)
+        REFERENCES assessments(uuid)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (user_uuid)
+        REFERENCES project_team_members(uuid)
+        ON DELETE CASCADE
+);
+
+CREATE TYPE finding_severity_enum AS ENUM (
+    'info',
+    'low',
+    'medium',
+    'high',
+    'critical'
+);
+
+
+-- FINDINGS
+CREATE TABLE findings (
+    uuid UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+
+    name TEXT NOT NULL,
+    severity finding_severity_enum,
+    affected_instance TEXT,
+
+    description TEXT,
+    remediation TEXT,
+    reference TEXT,
+    proof_of_concept TEXT,
+
+    assessment_uuid UUID,
+
+    FOREIGN KEY (assessment_uuid)
+        REFERENCES assessments(uuid)
+        ON DELETE CASCADE
+);
+
+CREATE OR REPLACE FUNCTION update_timestamp()
+RETURNS TRIGGER AS $$
+BEGIN
+   NEW.updated_at = CURRENT_TIMESTAMP;
+   RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+CREATE TRIGGER update_project_timestamp
+BEFORE UPDATE ON projects
+FOR EACH ROW
+EXECUTE FUNCTION update_timestamp();
+
+CREATE INDEX idx_assessment_project ON assessments(project_uuid);
+CREATE INDEX idx_findings_assessment ON findings(assessment_uuid);
+CREATE INDEX idx_project_team_user ON project_teams(team_member_uuid);
+CREATE INDEX idx_assessment_team_user ON assessment_teams(user_uuid);

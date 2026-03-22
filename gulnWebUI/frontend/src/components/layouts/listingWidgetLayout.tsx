@@ -4,6 +4,7 @@ type ListingWidgetLayoutProps<T> = {
     children: React.ReactNode;
     onNewClick: () => void;
     data: T[]; // JSON array (projects, assessments, etc.)
+    newClickLabel: string;
     onSearch: (filtered: T[]) => void;
     paginationAPI: string;
 };
@@ -12,6 +13,7 @@ const ListingWidgetLayout = <T,>({
     children,
     onNewClick,
     data,
+    newClickLabel,
     onSearch,
     paginationAPI
 }: ListingWidgetLayoutProps<T>): JSX.Element => {

@@ -59,6 +59,11 @@ func (h *AuthHandler) RegisterUserHandler(w http.ResponseWriter, r *http.Request
 		RepeatPassword string `json:"repeatPassword"`
 	}
 
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		utils.SendJSONResponse(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
 	err := h.authService.Register(r.Context(), req.Username, req.Password, req.RepeatPassword)
 	if err != nil {
 

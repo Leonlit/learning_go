@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"gulnManagement/gulnWebUI/internal/utils"
 	"log"
 
@@ -84,6 +85,7 @@ func GetUserUUID(username string) (string, error) {
 
 func CreateNewUser(username, passwordHash string) (string, error) {
 	var userUUID string
+	fmt.Println(username, passwordHash)
 	query := `
         INSERT INTO users (username, password_hash, uuid)
         VALUES ($1, $2, uuid_generate_v4())
