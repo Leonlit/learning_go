@@ -5,6 +5,7 @@ type ListingWidgetLayoutProps<T> = {
     onNewClick: () => void;
     data: T[]; // JSON array (projects, assessments, etc.)
     onSearch: (filtered: T[]) => void;
+    paginationAPI: string;
 };
 
 const ListingWidgetLayout = <T,>({
@@ -12,6 +13,7 @@ const ListingWidgetLayout = <T,>({
     onNewClick,
     data,
     onSearch,
+    paginationAPI
 }: ListingWidgetLayoutProps<T>): JSX.Element => {
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value.toLowerCase();

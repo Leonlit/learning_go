@@ -65,6 +65,7 @@ const ProjectDashboard = () => {
                 data={projects}
                 onNewClick={() => navigate("/users/projects/new")}
                 onSearch={setFilteredProjects}
+                paginationAPI="http://localhost:8080/api/projects/list/"
             >
                 {(filteredProjects.length === 0 ? projects : filteredProjects)
                     .length === 0 ? (
