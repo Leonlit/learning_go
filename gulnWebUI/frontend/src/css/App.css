@@ -222,6 +222,7 @@ tbody a {
 	color: white;
 	border-radius: 5px;
 	line-height: 1.25em;
+	cursor: pointer;
 }
 
 .menu-input-search {
