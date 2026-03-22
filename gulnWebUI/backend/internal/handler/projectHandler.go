@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"gulnManagement/gulnWebUI/internal/service"
 	"gulnManagement/gulnWebUI/internal/utils"
+	"math"
 	"net/http"
 	"path/filepath"
 	"strconv"
@@ -99,6 +100,23 @@ func (h *ProjectHandler) GetProjectsList(w http.ResponseWriter, r *http.Request)
 	if err != nil || page < 1 {
 		utils.SendJSONResponse(w,
 			utils.BadRequest("INVALID_PAGE_NUMBER", "Page number must be a number"),
+			http.StatusBadRequest,
+		)
+		return
+	}
+
+	page -= 1
+
+	projectCount, countErr := h.projectService.GetProjectCount(ctx, userUUID)
+	if err != nil {
+		utils.SendJSONResponse(w, err, countErr.Status)
+		return
+	}
+	maxPage := int(math.Ceil(float64(projectCount) / 10))
+	fmt.Println(maxPage, page)
+	if page > maxPage {
+		utils.SendJSONResponse(w,
+			utils.BadRequest("INVALID_PAGE", "Page does not exist"),
 			http.StatusBadRequest,
 		)
 		return

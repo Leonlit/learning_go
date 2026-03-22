@@ -103,7 +103,7 @@ func (r *ProjectRepository) GetProjectCount(ctx context.Context, userUUID string
 }
 
 func (r *ProjectRepository) GetProjectList(ctx context.Context, userUUID string, page int) ([]Project, error) {
-	offset := (page - 1) * 10
+	offset := page * 10
 	query := `
 		SELECT uuid, project_name, created_time FROM projects WHERE person_in_charge_uuid = $1 LIMIT 10 OFFSET $2
 	`
