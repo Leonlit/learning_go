@@ -10,12 +10,20 @@ type Project = {
 	project_created: string
 }
 
+type ProjectCount = {
+    count: number;
+};
+
+
 const ProjectDashboard = () => {
     const navigate = useNavigate();
     const [projects, setProjects] = useState<Project[]>([]);
 	const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+
+    const [page, setPage] = useState(1);
+    const [total, setTotal] = useState(0);
 
     const navigateToProjectInfo = (project: Project) => {
         navigate("/users/projects/info/" + project.project_uuid, {
@@ -29,8 +37,16 @@ const ProjectDashboard = () => {
     useEffect(() => {
         const fetchProjectList = async () => {
             try {
+                const totalRes = await fetch(
+                    "http://localhost:8080/api/projects/count",
+                    { credentials: "include" },
+                );
+
+                const countData: ProjectCount = await totalRes.json();
+                setTotal(countData.count);
+
                 const res = await fetch(
-                    "http://localhost:8080/api/projects/list/1",
+                    `http://localhost:8080/api/projects/list/${page}`,
                     {
                         credentials: "include", // Send JWT cookie
                     },
@@ -52,7 +68,7 @@ const ProjectDashboard = () => {
         };
 
         fetchProjectList();
-    }, []);
+    }, [page]);
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p className="error">{error}</p>;
@@ -66,7 +82,9 @@ const ProjectDashboard = () => {
                 onNewClick={() => navigate("/users/projects/new")}
                 newClickLabel="Add New Project"
                 onSearch={setFilteredProjects}
-                paginationAPI="http://localhost:8080/api/projects/list/"
+                currentPage={page}
+                total={total}
+                onPageChange={setPage}
             >
                 {(filteredProjects.length === 0 ? projects : filteredProjects)
                     .length === 0 ? (
