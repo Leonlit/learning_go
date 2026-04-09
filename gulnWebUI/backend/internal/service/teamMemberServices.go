@@ -45,9 +45,9 @@ func (s *TeamMemberService) AddNewTeamMember(ctx context.Context, data dto.AddTe
 	return projectUUID, nil
 }
 
-func (s *TeamMemberService) GetTeamMemberInfo(ctx context.Context, userUUID, projectUUID string) (repository.TeamMember, *utils.AppError) {
+func (s *TeamMemberService) GetTeamMemberInfo(ctx context.Context, teamMemberUUID string) (repository.TeamMember, *utils.AppError) {
 
-	project, err := s.teamMemberRepo.GetTeamMemberInfo(ctx, userUUID, projectUUID)
+	project, err := s.teamMemberRepo.GetTeamMemberInfo(ctx, teamMemberUUID)
 
 	if err != nil {
 

@@ -3,7 +3,7 @@ import UserDashboard from "../pages/users/userDashboard";
 import ProjectDashboard from "../pages/users/projects/projectsDashboard";
 import ProjectNew from "../pages/users/projects/projectNew"
 import ProjectInfo from "../pages/users/projects/projectInfo"
-import CreateNewTeamMember from "../pages/users/teamMembers/teamMembersDashboard"
+import CreateNewTeamMember from "../pages/users/teamMembers/newTeamMembers"
 
 import ProtectedRoute from "./protectedRoutes";
 

@@ -4,8 +4,8 @@ import HeadMetadata from "../../../components/heads/headMetadata";
 import ProtectedLayout from "../../../components/layouts/protectedLayout";
 import { useNavigate } from "react-router-dom";
 
-type NewProjectResponse = {
-    projectID: string;
+type NewTeanMemberResponse = {
+    teamMemberID: string;
 };
 
 const CreateNewTeamMember = () => {
@@ -41,9 +41,9 @@ const CreateNewTeamMember = () => {
                     method: "POST",
                     credentials: "include",
                     body: JSON.stringify({
-                        teamMemberName,
-                        teamMemberDepartment,
-                        teamMemberRole,
+                        name: teamMemberName,
+                        department: teamMemberDepartment,
+                        role: teamMemberRole,
                     }),
                 },
             );
@@ -52,11 +52,11 @@ const CreateNewTeamMember = () => {
                 throw new Error("Team Member creation failed.");
             }
 
-            const res: NewProjectResponse = await response.json();
+            const res: NewTeanMemberResponse = await response.json();
             console.log(res);
 
             alert("Project created successfully!");
-            navigate("/users/team-members/info/" + res.projectID);
+            navigate("/users/team-members/info/" + res.teamMemberID);
         } catch (err) {
             if (err instanceof Error) {
                 console.error(err.message);

@@ -123,15 +123,6 @@ func (h *TeamMemberHandler) GetTeamMemberInfo(w http.ResponseWriter, r *http.Req
 
 	ctx := r.Context()
 
-	userUUID, ok := ctx.Value("UserUUID").(string)
-	if !ok {
-		utils.SendJSONResponse(w,
-			utils.Unauthorized("Unauthorized", nil),
-			http.StatusUnauthorized,
-		)
-		return
-	}
-
 	vars := mux.Vars(r)
 	teamMemberUUID := vars["teamMemberUUID"]
 
@@ -143,7 +134,7 @@ func (h *TeamMemberHandler) GetTeamMemberInfo(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	teamMember, appErr := h.teamMemberService.GetTeamMemberInfo(ctx, userUUID, teamMemberUUID)
+	teamMember, appErr := h.teamMemberService.GetTeamMemberInfo(ctx, teamMemberUUID)
 	if appErr != nil {
 		utils.SendJSONResponse(w, appErr, appErr.Status)
 		return

@@ -68,15 +68,15 @@ func (r *TeamMemberRepository) GetTeamMemberList(ctx context.Context, page int) 
 func (r *TeamMemberRepository) AddNewTeamMember(ctx context.Context, data dto.AddTeamMemberRequest) (string, error) {
 	var TeamMemberUUID string
 	query := `
-		INSERT INTO projects (uuid, name, department, role)
+		INSERT INTO project_team_members (uuid, name, department, role)
 		VALUES (uuid_generate_v4(), $1, $2, $3)
 		RETURNING uuid
 	`
 
 	err := r.db.QueryRowContext(ctx, query,
-		data.Name,
-		data.Department,
-		data.Role,
+		&data.Name,
+		&data.Department,
+		&data.Role,
 	).Scan(&TeamMemberUUID)
 
 	if err != nil {
@@ -88,18 +88,18 @@ func (r *TeamMemberRepository) AddNewTeamMember(ctx context.Context, data dto.Ad
 
 func (r *TeamMemberRepository) GetTeamMemberInfo(
 	ctx context.Context,
-	userUUID, TeamMemberUUID string,
+	teamMemberUUID string,
 ) (TeamMember, error) {
 
 	query := `
-		SELECT uuid, project_name, created_time
-		FROM projects
-		WHERE uuid = $1 AND person_in_charge_uuid = $2
+		SELECT name, department, role
+		FROM project_team_members
+		WHERE uuid = $1
 	`
 
 	var teamMember TeamMember
 
-	err := r.db.QueryRowContext(ctx, query, TeamMemberUUID, userUUID).Scan(
+	err := r.db.QueryRowContext(ctx, query, teamMemberUUID).Scan(
 		&teamMember.TeamMemberUUID,
 		&teamMember.TeamMemberName,
 	)
