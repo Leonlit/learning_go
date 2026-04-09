@@ -3,7 +3,10 @@ import UserDashboard from "../pages/users/userDashboard";
 import ProjectDashboard from "../pages/users/projects/projectsDashboard";
 import ProjectNew from "../pages/users/projects/projectNew"
 import ProjectInfo from "../pages/users/projects/projectInfo"
+import CreateNewTeamMember from "../pages/users/teamMembers/teamMembersDashboard"
+
 import ProtectedRoute from "./protectedRoutes";
+
 
 const UserRoutes = () => {
 	return (
@@ -29,6 +32,12 @@ const UserRoutes = () => {
 			<Route path="projects/info/:projectUUID" element={
 				<ProtectedRoute>	
 					<ProjectInfo />
+				</ProtectedRoute>
+			} />
+
+			<Route path="team-members/new" element={
+				<ProtectedRoute>	
+					<CreateNewTeamMember />
 				</ProtectedRoute>
 			} />
 		</Routes>

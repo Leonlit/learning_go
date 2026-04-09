@@ -8,7 +8,7 @@ type NewProjectResponse = {
     projectID: string;
 };
 
-const createNewTeamMember = () => {
+const CreateNewTeamMember = () => {
     const [teamMemberName, setTeamMemberName] = useState<string>("");
     const [teamMemberDepartment, setTeamMemberDepartment] =
         useState<string>("");
@@ -36,7 +36,7 @@ const createNewTeamMember = () => {
 
         try {
             const response = await fetch(
-                "http://localhost:8080/api/teamMembers/new",
+                "http://localhost:8080/api/team-members/new",
                 {
                     method: "POST",
                     credentials: "include",
@@ -56,7 +56,7 @@ const createNewTeamMember = () => {
             console.log(res);
 
             alert("Project created successfully!");
-            navigate("/users/team-member/info/" + res.projectID);
+            navigate("/users/team-members/info/" + res.projectID);
         } catch (err) {
             if (err instanceof Error) {
                 console.error(err.message);
@@ -107,4 +107,4 @@ const createNewTeamMember = () => {
     );
 };
 
-export default createNewTeamMember;
+export default CreateNewTeamMember;

@@ -8,7 +8,7 @@ import (
 )
 
 func RegisterTeamRoutes(router *mux.Router, teamMemberHandler *handlers.TeamMemberHandler) {
-	subRoute := router.PathPrefix("/team-member").Subrouter()
+	subRoute := router.PathPrefix("/team-members").Subrouter()
 	subRoute.Use(middlewares.AuthenticateJWT)
 
 	subRoute.HandleFunc("/count", teamMemberHandler.GetTeamMemberCount).Methods("GET")

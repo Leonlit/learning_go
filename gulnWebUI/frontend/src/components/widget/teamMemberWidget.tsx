@@ -30,7 +30,7 @@ const TeamMemberWidget = () => {
         const fetchTeamMembersList = async () => {
             try {
                 const totalRes = await fetch(
-                    "http://localhost:8080/api/team-member/count",
+                    "http://localhost:8080/api/team-members/count",
                     { credentials: "include" },
                 );
 
@@ -38,7 +38,7 @@ const TeamMemberWidget = () => {
                 setTotal(countData.count);
 
                 const listRes = await fetch(
-                    `http://localhost:8080/api/team-member/list/${page}`,
+                    `http://localhost:8080/api/team-members/list/${page}`,
                     { credentials: "include" },
                 );
 
@@ -64,7 +64,7 @@ const TeamMemberWidget = () => {
     return (
         <ListingWidgetLayout
             data={teamMembers}
-            onNewClick={() => navigate("/users/team/new")}
+            onNewClick={() => navigate("/users/team-members/new")}
             newClickLabel="Add Team Member"
             onSearch={setFilteredTeamMembers}
             currentPage={page}
