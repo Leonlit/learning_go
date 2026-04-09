@@ -39,6 +39,7 @@ func main() {
 	userRepo := repository.NewUserRepository(repository.DBObj)
 	projectRepo := repository.NewProjectRepository(repository.DBObj)
 	assessmentRepo := repository.NewAssessmentRepository(repository.DBObj)
+	teamMemberRepo := repository.NewTeamMemberRepository(repository.DBObj)
 
 	authService := service.NewAuthService(userRepo)
 	authHandler := handler.NewAuthHandler(authService)
@@ -49,6 +50,9 @@ func main() {
 	assessmentService := service.NewAssessmentService(assessmentRepo)
 	assessmentHandler := handler.NewAssessmentHandler(assessmentService)
 
+	teamMemberService := service.NewTeamMemberService(teamMemberRepo)
+	teamMemberHandler := handler.NewTeamMemberHandler(teamMemberService)
+
 	// API prefix
 	apiRouter := router.PathPrefix("/api").Subrouter()
 
@@ -56,6 +60,7 @@ func main() {
 	routes.RegisterAuthRoutes(apiRouter, authHandler)
 	routes.RegisterProjectRoutes(apiRouter, projectHandler)
 	routes.RegisterAssessmentRoutes(apiRouter, assessmentHandler)
+	routes.RegisterTeamRoutes(apiRouter, teamMemberHandler)
 
 	log.Println("Server running on: http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", corsRouter))

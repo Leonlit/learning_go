@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"gulnManagement/gulnWebUI/internal/dto"
 	"log"
 )
 
@@ -19,16 +20,14 @@ type TeamMember struct {
 	TeamMemberName *string `json:"team_member_name"`
 }
 
-func (r *TeamMemberRepository) GetProjectCount(ctx context.Context, userUUID string) (int, error) {
+func (r *TeamMemberRepository) GetTeamMemberCount(ctx context.Context) (int, error) {
 	query := `
-		SELECT COUNT(uuid)
-		FROM projects
-		WHERE person_in_charge_uuid = $1
+		SELECT COUNT(uuid) FROM project_team_members
 	`
 
 	var count int
 
-	err := r.db.QueryRowContext(ctx, query, userUUID).Scan(&count)
+	err := r.db.QueryRowContext(ctx, query).Scan(&count)
 	if err != nil {
 		log.Println("Query error:", err)
 		return 0, err
@@ -37,12 +36,12 @@ func (r *TeamMemberRepository) GetProjectCount(ctx context.Context, userUUID str
 	return count, nil
 }
 
-func (r *TeamMemberRepository) GetTeamMemberList(ctx context.Context, userUUID string, page int) ([]TeamMember, error) {
+func (r *TeamMemberRepository) GetTeamMemberList(ctx context.Context, page int) ([]TeamMember, error) {
 	offset := page * 10
 	query := `
-		SELECT uuid, project_name, created_time FROM projects WHERE person_in_charge_uuid = $1 LIMIT 10 OFFSET $2
+		SELECT uuid, name, department, role FROM project_team_members LIMIT 10 OFFSET $1
 	`
-	rows, err := r.db.QueryContext(ctx, query, userUUID, offset)
+	rows, err := r.db.QueryContext(ctx, query, offset)
 	if err != nil {
 		log.Println("Query error:", err)
 		return []TeamMember{}, err
@@ -66,17 +65,18 @@ func (r *TeamMemberRepository) GetTeamMemberList(ctx context.Context, userUUID s
 	return projects, nil
 }
 
-func (r *TeamMemberRepository) AddNewTeamMember(ctx context.Context, userUUID, TeamMemberName string) (string, error) {
+func (r *TeamMemberRepository) AddNewTeamMember(ctx context.Context, data dto.AddTeamMemberRequest) (string, error) {
 	var TeamMemberUUID string
 	query := `
-		INSERT INTO projects (uuid, person_in_charge_uuid, project_name)
-		VALUES (uuid_generate_v4(), $1, $2)
+		INSERT INTO projects (uuid, name, department, role)
+		VALUES (uuid_generate_v4(), $1, $2, $3)
 		RETURNING uuid
 	`
 
 	err := r.db.QueryRowContext(ctx, query,
-		userUUID,
-		TeamMemberName,
+		data.Name,
+		data.Department,
+		data.Role,
 	).Scan(&TeamMemberUUID)
 
 	if err != nil {

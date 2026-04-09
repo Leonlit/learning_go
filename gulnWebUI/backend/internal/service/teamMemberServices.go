@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"gulnManagement/gulnWebUI/internal/dto"
 	"gulnManagement/gulnWebUI/internal/repository"
 	"gulnManagement/gulnWebUI/internal/utils"
 )
@@ -17,7 +18,7 @@ func NewTeamMemberService(teamMemberRepo *repository.TeamMemberRepository) *Team
 }
 
 func (s *TeamMemberService) GetTeamMemberCount(ctx context.Context, userUUID string) (int, *utils.AppError) {
-	projectCounts, err := s.teamMemberRepo.GetProjectCount(ctx, userUUID)
+	projectCounts, err := s.teamMemberRepo.GetTeamMemberCount(ctx)
 	if err != nil {
 		return -1, utils.InternalError("Error fetching project count", err)
 	}
@@ -25,23 +26,23 @@ func (s *TeamMemberService) GetTeamMemberCount(ctx context.Context, userUUID str
 	return projectCounts, nil
 }
 
-func (s *TeamMemberService) AddNewTeamMember(ctx context.Context, userUUID, projectName string) (string, *utils.AppError) {
+func (s *TeamMemberService) GetTeamMemberList(ctx context.Context, page int) ([]repository.TeamMember, *utils.AppError) {
 
-	projectUUID, err := s.teamMemberRepo.AddNewTeamMember(ctx, userUUID, projectName)
+	projects, err := s.teamMemberRepo.GetTeamMemberList(ctx, page)
+	if err != nil {
+		return []repository.TeamMember{}, utils.InternalError("Error fetching project list", err)
+	}
+	return projects, nil
+}
+
+func (s *TeamMemberService) AddNewTeamMember(ctx context.Context, data dto.AddTeamMemberRequest) (string, *utils.AppError) {
+
+	projectUUID, err := s.teamMemberRepo.AddNewTeamMember(ctx, data)
 	if err != nil {
 		return "", utils.InternalError("Error creating new project", err)
 	}
 
 	return projectUUID, nil
-}
-
-func (s *TeamMemberService) GetTeamMemberList(ctx context.Context, userUUID string, page int) ([]repository.TeamMember, *utils.AppError) {
-
-	projects, err := s.teamMemberRepo.GetTeamMemberList(ctx, userUUID, page)
-	if err != nil {
-		return []repository.TeamMember{}, utils.InternalError("Error fetching project list", err)
-	}
-	return projects, nil
 }
 
 func (s *TeamMemberService) GetTeamMemberInfo(ctx context.Context, userUUID, projectUUID string) (repository.TeamMember, *utils.AppError) {

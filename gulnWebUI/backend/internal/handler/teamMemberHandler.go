@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	"gulnManagement/gulnWebUI/internal/dto"
 	"gulnManagement/gulnWebUI/internal/service"
 	"gulnManagement/gulnWebUI/internal/utils"
 	"math"
@@ -87,7 +88,7 @@ func (h *TeamMemberHandler) GetTeamMemberList(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	teamMembers, appErr := h.teamMemberService.GetTeamMemberList(ctx, userUUID, page)
+	teamMembers, appErr := h.teamMemberService.GetTeamMemberList(ctx, page)
 	if appErr != nil {
 		utils.SendJSONResponse(w, appErr, appErr.Status)
 		return
@@ -99,27 +100,14 @@ func (h *TeamMemberHandler) GetTeamMemberList(w http.ResponseWriter, r *http.Req
 
 func (h *TeamMemberHandler) AddNewTeamMember(w http.ResponseWriter, r *http.Request) {
 
-	ctx := r.Context()
+	var req dto.AddTeamMemberRequest
 
-	userUUID, ok := ctx.Value("UserUUID").(string)
-	if !ok {
-		utils.SendJSONResponse(w,
-			utils.Unauthorized("Unauthorized", nil),
-			http.StatusUnauthorized,
-		)
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
 
-	teamMemberName := r.FormValue("teamMemberName")
-	if teamMemberName == "" {
-		utils.SendJSONResponse(w,
-			utils.BadRequest("INVALID_PROJECT_NAME", "Team Member name is required"),
-			http.StatusBadRequest,
-		)
-		return
-	}
-
-	teamMembersID, err := h.teamMemberService.AddNewTeamMember(r.Context(), userUUID, teamMemberName)
+	teamMembersID, err := h.teamMemberService.AddNewTeamMember(r.Context(), req)
 	if err != nil {
 		utils.SendJSONResponse(w, err, err.Status)
 		return

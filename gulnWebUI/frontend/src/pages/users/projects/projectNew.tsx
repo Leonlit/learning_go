@@ -9,7 +9,7 @@ type NewProjectResponse = {
 	projectID: string;
 };
 
-const ScanUpload = () => {
+const createNewProject = () => {
     const [projectName, setProjectName] = useState<string>("");
 
     const navigate = useNavigate();
@@ -76,4 +76,4 @@ const ScanUpload = () => {
     );
 };
 
-export default ScanUpload;
+export default createNewProject;
