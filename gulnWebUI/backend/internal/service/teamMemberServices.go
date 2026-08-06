@@ -30,7 +30,7 @@ func (s *TeamMemberService) GetTeamMemberList(ctx context.Context, page int) ([]
 
 	projects, err := s.teamMemberRepo.GetTeamMemberList(ctx, page)
 	if err != nil {
-		return []repository.TeamMember{}, utils.InternalError("Error fetching project list", err)
+		return []repository.TeamMember{}, utils.InternalError("Error fetching team member list", err)
 	}
 	return projects, nil
 }

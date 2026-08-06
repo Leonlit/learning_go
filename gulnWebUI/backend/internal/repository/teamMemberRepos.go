@@ -16,8 +16,10 @@ func NewTeamMemberRepository(db *sql.DB) *TeamMemberRepository {
 }
 
 type TeamMember struct {
-	TeamMemberUUID *string `json:"team_member_uuid"`
-	TeamMemberName *string `json:"team_member_name"`
+	TeamMemberUUID       *string `json:"team_member_uuid"`
+	TeamMemberName       *string `json:"team_member_name"`
+	TeamMemberDepartment *string `json:"team_member_department"`
+	TeamMemberRole       *string `json:"team_member_role"`
 }
 
 func (r *TeamMemberRepository) GetTeamMemberCount(ctx context.Context) (int, error) {
@@ -52,7 +54,12 @@ func (r *TeamMemberRepository) GetTeamMemberList(ctx context.Context, page int) 
 
 	for rows.Next() {
 		var teamMember TeamMember
-		if err := rows.Scan(&teamMember.TeamMemberUUID, &teamMember.TeamMemberName); err != nil {
+		if err := rows.Scan(
+			&teamMember.TeamMemberUUID,
+			&teamMember.TeamMemberName,
+			&teamMember.TeamMemberDepartment,
+			&teamMember.TeamMemberRole,
+		); err != nil {
 			return []TeamMember{}, err
 		}
 		projects = append(projects, teamMember)
