@@ -3,6 +3,7 @@ import { ReactNode } from "react";
 type ListingWidgetLayoutProps<T> = {
     children: React.ReactNode;
     onNewClick: () => void;
+    headers: string[]; 
     data: T[];
     newClickLabel: string;
     onSearch: (filtered: T[]) => void;
@@ -14,6 +15,7 @@ type ListingWidgetLayoutProps<T> = {
 const ListingWidgetLayout = <T,>({
     children,
     onNewClick,
+    headers,
     data,
     newClickLabel,
     onSearch,
@@ -68,9 +70,9 @@ const ListingWidgetLayout = <T,>({
     return (
         <div className="listing-container">
             <div className="listing-menu-container">
-                <div className="menu-btn" onClick={onNewClick}>
+                <button type="button" className="menu-btn" onClick={onNewClick}>
                     {newClickLabel}
-                </div>
+                </button>
 
                 <input
                     className="menu-input-search"
@@ -79,12 +81,23 @@ const ListingWidgetLayout = <T,>({
                 />
             </div>
 
-            <div className="menu-item-listing">{children}</div>
+            <table className="styled-table">
+                <thead>
+                    <tr>
+                        {headers.map((header) => (
+                            <th key={header}>{header}</th>
+                        ))}
+                    </tr>
+                </thead>
+                <tbody>
+                    {children}
+                </tbody>
+            </table>
 
             {totalPages > 0 && (
                 <div className="pagination">
                     {currentPage > 1 && (
-                        <button onClick={() => onPageChange(currentPage - 1)}>
+                        <button type="button" onClick={() => onPageChange(currentPage - 1)}>
                             Prev
                         </button>
                     )}
@@ -96,6 +109,7 @@ const ListingWidgetLayout = <T,>({
                             </span>
                         ) : (
                             <button
+                                type="button"
                                 key={index}
                                 onClick={() => onPageChange(p as number)}
                                 className={p === currentPage ? "active" : ""}
@@ -106,7 +120,10 @@ const ListingWidgetLayout = <T,>({
                     )}
 
                     {currentPage < totalPages && (
-                        <button onClick={() => onPageChange(currentPage + 1)}>
+                        <button 
+                            type="button"
+                            onClick={() => onPageChange(currentPage + 1)}
+                        >
                             Next
                         </button>
                     )}

@@ -3,15 +3,12 @@ import { useNavigate } from "react-router-dom";
 import HeadMetadata from "../../../components/heads/headMetadata";
 import ProtectedLayout from "../../../components/layouts/protectedLayout";
 import ListingWidgetLayout from "../../../components/layouts/listingWidgetLayout";
-import {
-    Project,
-    ProjectCount
-} from "../../../types/projects";
+import { Project, ProjectCount } from "../../../types/projects";
 
 const ProjectDashboard = () => {
     const navigate = useNavigate();
     const [projects, setProjects] = useState<Project[]>([]);
-	const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
+    const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
@@ -70,6 +67,7 @@ const ProjectDashboard = () => {
             <ListingWidgetLayout
                 data={projects}
                 onNewClick={() => navigate("/users/projects/new")}
+                headers={["Project Name", "Created On"]}
                 newClickLabel="Add New Project"
                 onSearch={setFilteredProjects}
                 currentPage={page}
@@ -80,37 +78,27 @@ const ProjectDashboard = () => {
                     .length === 0 ? (
                     <p>No Projects.</p>
                 ) : (
-                    <table className="styled-table">
-                        <thead>
-                            <tr>
-                                <th>Project Name</th>
-                                <th>Created On</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {(filteredProjects.length === 0
-                                ? projects
-                                : filteredProjects
-                            ).map((project) => (
-                                <tr key={project.project_uuid}>
-                                    <td>
-                                        <a
-                                            onClick={() =>
-                                                navigateToProjectInfo(project)
-                                            }
-                                        >
-                                            {project.project_name}
-                                        </a>
-                                    </td>
-                                    <td>
-                                        {new Date(
-                                            project.project_created,
-                                        ).toLocaleString()}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                    (filteredProjects.length === 0
+                        ? projects
+                        : filteredProjects
+                    ).map((project) => (
+                        <tr key={project.project_uuid}>
+                            <td>
+                                <a
+                                    onClick={() =>
+                                        navigateToProjectInfo(project)
+                                    }
+                                >
+                                    {project.project_name}
+                                </a>
+                            </td>
+                            <td>
+                                {new Date(
+                                    project.project_created,
+                                ).toLocaleString()}
+                            </td>
+                        </tr>
+                    ))
                 )}
             </ListingWidgetLayout>
         </ProtectedLayout>

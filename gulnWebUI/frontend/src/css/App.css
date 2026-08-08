@@ -236,4 +236,29 @@ tbody a {
 	border-radius: 10px;
 	border: 1px solid #2c2c3c;
 	padding: 10px;
+	width: 80%;
+}
+
+.menu-item-listing tr:nth-child(even) {
+  background-color: #d8d8e0;
+}
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    max-width: 50vw;
+    width: 90%;
+    max-height: 85vh;
+    overflow-y: auto;
 }

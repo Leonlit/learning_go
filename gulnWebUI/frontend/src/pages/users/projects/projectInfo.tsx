@@ -2,6 +2,10 @@ import { useEffect, useState } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import HeadMetadata from "../../../components/heads/headMetadata";
 import ProtectedLayout from "../../../components/layouts/protectedLayout";
+import {
+    Project,
+    ProjectCount
+} from "../../../types/projects";
 
 const ProjectInfo = () => {
 	const [scans, setScans] = useState([]);
@@ -12,14 +16,14 @@ const ProjectInfo = () => {
 	const navigate = useNavigate();
 	const {state} = useLocation()
 
-	const navigateToProjectUpload = (project) => {
+	const navigateToProjectUpload = (project: Project) => {
 		navigate("/users/projects/upload/" + project.project_uuid, {
-			state: {projectName: project.projectName}
+			state: project
 		})
 	}
 
-	const navigateToScanInfo = (projectUUID, scan) => {
-		navigate("/users/projects/info/"+ projectUUID +"/scan/info/" + scan.scan_uuid, {
+	const navigateToScanInfo = (project: Project, scan) => {
+		navigate("/users/projects/info/"+ project.project_uuid +"/scan/info/" + scan.scan_uuid, {
 			state: {scanName: scan.scan_name}
 		})
 	}
@@ -70,10 +74,10 @@ const ProjectInfo = () => {
 
 	return (
 		<ProtectedLayout>
-			<HeadMetadata title={state.projectName + " - Project Scans"}/>
+			<HeadMetadata title={state.project_name + " - Project Scans"}/>
 			<button><a onClick={() => navigateToProjectUpload(state)}>Add Scan</a></button>
 			<div className="dashboard">
-				<h2>{state.projectName} - Project Scans</h2>
+				<h2>{state.project_name} - Project Scans</h2>
 				{ !infoHeader ? (
 					<p>No data in database.</p>
 				) : (
@@ -112,7 +116,7 @@ const ProjectInfo = () => {
 						<tbody>
 							{scans.map((scan) => (
 								<tr key={scan.scan_uuid}>
-									<td><a onClick={() => navigateToScanInfo(state.projectUUID, scan)}>{scan.scan_name}</a></td>
+									<td><a onClick={() => navigateToScanInfo(state, scan)}>{scan.scan_name}</a></td>
 									<td>{scan.total_hosts}</td>
 									<td>{scan.hosts_up}</td>
 									<td>{scan.hosts_down}</td>
