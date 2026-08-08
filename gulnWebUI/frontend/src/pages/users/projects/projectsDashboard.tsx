@@ -3,17 +3,10 @@ import { useNavigate } from "react-router-dom";
 import HeadMetadata from "../../../components/heads/headMetadata";
 import ProtectedLayout from "../../../components/layouts/protectedLayout";
 import ListingWidgetLayout from "../../../components/layouts/listingWidgetLayout";
-
-type Project = {
-	project_uuid: string
-	project_name: string
-	project_created: string
-}
-
-type ProjectCount = {
-    count: number;
-};
-
+import {
+    Project,
+    ProjectCount
+} from "../../../types/projects";
 
 const ProjectDashboard = () => {
     const navigate = useNavigate();
@@ -27,10 +20,7 @@ const ProjectDashboard = () => {
 
     const navigateToProjectInfo = (project: Project) => {
         navigate("/users/projects/info/" + project.project_uuid, {
-            state: {
-                projectUUID: project.project_uuid,
-                projectName: project.project_name,
-            },
+            state: project,
         });
     };
 

@@ -4,10 +4,9 @@ import HeadMetadata from "../../../components/heads/headMetadata";
 import ProtectedLayout from "../../../components/layouts/protectedLayout";
 import TeamMemberWidget from "../../../components/widget/teamMemberWidget"
 import { useNavigate } from "react-router-dom";
-
-type NewProjectResponse = {
-	projectID: string;
-};
+import { 
+    NewProjectResponse 
+} from "../../../types/projects"; 
 
 const createNewProject = () => {
     const [projectName, setProjectName] = useState<string>("");
