@@ -48,6 +48,14 @@ const TeamMemberWidget = () => {
         };
 
         fetchTeamMembersList();
+
+        const handleTabFocus = () => {
+            fetchTeamMembersList();
+        };
+
+        window.addEventListener("focus", handleTabFocus);
+        return () => window.removeEventListener("focus", handleTabFocus);
+
     }, [page]);
 
     const displayList =
@@ -118,7 +126,7 @@ const TeamMemberWidget = () => {
                     <>
                         <ListingWidgetLayout
                             data={teamMembers}
-                            onNewClick={() => navigate("/users/team-members/new")}
+                            onNewClick={() => window.open("/users/team-members/new")}
                             headers={["selected","No.", "Name", "Department", "Project Role"]}
                             newClickLabel="Create New Team Member"
                             onSearch={setFilteredTeamMembers}
