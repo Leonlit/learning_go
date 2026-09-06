@@ -17,7 +17,7 @@ func NewAssessmentService(assessmentRepo *repository.AssessmentRepository) *Asse
 func (s *AssessmentService) GetAssessmentCount(ctx context.Context, userUUID string) (int, *utils.AppError) {
 	projectCounts, err := s.assessmentRepo.GetAssessmentCount(ctx, userUUID)
 	if err != nil {
-		return -1, utils.InternalError("Error fetching project count", err)
+		return -1, utils.InternalError("Error fetching assessment count", err)
 	}
 
 	return projectCounts, nil

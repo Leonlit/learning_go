@@ -38,7 +38,7 @@ const createNewProject = () => {
             console.log(res);
 
             alert("Project created successfully!");
-            navigate("/users/projects/edit/" + res.projectID);
+            navigate("/users/projects/info/" + res.uuid);
         } catch (err) {
             if (err instanceof Error) {
                 console.error(err.message);

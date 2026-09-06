@@ -16,7 +16,7 @@ const ProjectDashboard = () => {
     const [total, setTotal] = useState(0);
 
     const navigateToProjectInfo = (project: Project) => {
-        navigate("/users/projects/info/" + project.project_uuid, {
+        navigate("/users/projects/" + project.uuid + "/info", {
             state: project,
         });
     };
@@ -82,19 +82,19 @@ const ProjectDashboard = () => {
                         ? projects
                         : filteredProjects
                     ).map((project) => (
-                        <tr key={project.project_uuid}>
+                        <tr key={project.uuid}>
                             <td>
                                 <a
                                     onClick={() =>
                                         navigateToProjectInfo(project)
                                     }
                                 >
-                                    {project.project_name}
+                                    {project.name}
                                 </a>
                             </td>
                             <td>
                                 {new Date(
-                                    project.project_created,
+                                    project.created_at,
                                 ).toLocaleString()}
                             </td>
                         </tr>

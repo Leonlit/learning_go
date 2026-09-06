@@ -29,7 +29,7 @@ const UserRoutes = () => {
 				</ProtectedRoute>
 			} />
 
-			<Route path="projects/info/:projectUUID" element={
+			<Route path="projects/:projectUUID/info" element={
 				<ProtectedRoute>	
 					<ProjectInfo />
 				</ProtectedRoute>

@@ -58,8 +58,7 @@ func main() {
 
 	// --- register routes ---
 	routes.RegisterAuthRoutes(apiRouter, authHandler)
-	routes.RegisterProjectRoutes(apiRouter, projectHandler)
-	routes.RegisterAssessmentRoutes(apiRouter, assessmentHandler)
+	routes.RegisterProjectRoutes(apiRouter, projectHandler, assessmentHandler)
 	routes.RegisterTeamRoutes(apiRouter, teamMemberHandler)
 
 	log.Println("Server running on: http://localhost:8080")

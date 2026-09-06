@@ -1,3 +1,5 @@
+//Fix this page
+
 import { useState } from "react";
 import "../../../css/App.css";
 import HeadMetadata from "../../../components/heads/headMetadata";
@@ -49,9 +51,9 @@ const editProject = () => {
 
     return (
         <ProtectedLayout>
-            <HeadMetadata title={"Create New Project"} />
+            <HeadMetadata title={"Edit Project - " + } />
 
-            <h2>Create New Project</h2>
+            <h2>Edit Project - {{  }}</h2>
 
             <form onSubmit={handleSubmit}>
                 <label>Project Name</label>

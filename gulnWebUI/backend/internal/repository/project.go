@@ -16,10 +16,10 @@ func NewProjectRepository(db *sql.DB) *ProjectRepository {
 }
 
 type Project struct {
-	ProjectUUID      *string    `json:"project_uuid"`
-	ProjectName      *string    `json:"project_name"`
-	ProjectCreatedAt *time.Time `json:"project_created_at"`
-	ProjectUpdatedAt *time.Time `json:"project_updated_at"`
+	ProjectUUID      *string    `json:"uuid"`
+	ProjectName      *string    `json:"name"`
+	ProjectCreatedAt *time.Time `json:"created_at"`
+	ProjectUpdatedAt *time.Time `json:"updated_at"`
 }
 
 type ScanAndHostsCount struct {

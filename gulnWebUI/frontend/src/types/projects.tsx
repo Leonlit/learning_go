@@ -1,11 +1,12 @@
 export interface NewProjectResponse {
-    projectID: string;
+    uuid: string;
 };
 
 export interface Project {
-	project_uuid: string
-	project_name: string
-	project_created: string
+	uuid: string
+	name: string
+	created_at: string
+	updated_at: string
 }
 
 export interface ProjectCount {

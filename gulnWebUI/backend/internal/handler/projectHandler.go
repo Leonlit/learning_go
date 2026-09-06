@@ -133,7 +133,7 @@ func (h *ProjectHandler) GetProjectsList(w http.ResponseWriter, r *http.Request)
 }
 
 func (h *ProjectHandler) GetProjectInfo(w http.ResponseWriter, r *http.Request) {
-
+	fmt.Println("Test")
 	ctx := r.Context()
 
 	userUUID, ok := ctx.Value("UserUUID").(string)

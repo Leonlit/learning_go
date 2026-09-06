@@ -82,7 +82,8 @@ CREATE TABLE assessments (
     name TEXT NOT NULL,
 
     start_datetime TIMESTAMP,
-    end_datetime TIMESTAMP,
+    updated_datetime TIMESTAMP,
+    end_datetime TIMESTAMP NULL DEFAULT NULL,
 
     project_uuid UUID,
     type UUID,

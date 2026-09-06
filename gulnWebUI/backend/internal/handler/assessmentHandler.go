@@ -3,6 +3,7 @@ package handler
 import (
 	"gulnManagement/gulnWebUI/internal/service"
 	"gulnManagement/gulnWebUI/internal/utils"
+	"log"
 	"net/http"
 )
 
@@ -30,6 +31,7 @@ func (s *AssessmentHandler) GetAssessmentCount(w http.ResponseWriter, r *http.Re
 	assessmentCounts, err := s.assessmentService.GetAssessmentCount(ctx, userUUID)
 	if err != nil {
 		utils.SendJSONResponse(w, err, err.Status)
+		log.Printf(err.Message)
 		return
 	}
 
