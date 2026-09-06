@@ -29,7 +29,7 @@ const UserDashboard = () => {
                 );
 
                 const assessmentRes = await fetch(
-                    "http://localhost:8080/api/assessments/count",
+                    "http://localhost:8080/api/stats/assessments/count",
                     {
                         credentials: "include", // Send JWT cookie
                     },
