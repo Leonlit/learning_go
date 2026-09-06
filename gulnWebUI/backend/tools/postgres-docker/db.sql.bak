@@ -6,7 +6,7 @@ CREATE TABLE users (
     uuid UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     username TEXT UNIQUE NOT NULL,
     password_hash TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
 
@@ -22,8 +22,8 @@ CREATE TABLE project_statuses (
 CREATE TABLE projects (
     uuid UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
 
     person_in_charge_uuid UUID,
     project_status_uuid UUID,
@@ -81,14 +81,17 @@ CREATE TABLE assessments (
     uuid UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name TEXT NOT NULL,
 
-    start_datetime TIMESTAMP,
-    updated_datetime TIMESTAMP,
-    end_datetime TIMESTAMP NULL DEFAULT NULL,
+    start_datetime TIMESTAMPTZ,
+    updated_datetime TIMESTAMPTZ,
+    end_datetime TIMESTAMPTZ NULL DEFAULT NULL,
 
     project_uuid UUID,
     type UUID,
     phase UUID,
     created_by UUID,
+
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY (project_uuid)
         REFERENCES projects(uuid)
@@ -108,15 +111,15 @@ CREATE TABLE assessments (
 -- ASSESSMENT TEAMS
 CREATE TABLE assessment_teams (
     assessment_uuid UUID,
-    user_uuid UUID,
+    team_member_uuid UUID,
 
-    PRIMARY KEY (assessment_uuid, user_uuid),
+    PRIMARY KEY (assessment_uuid, team_member_uuid),
 
     FOREIGN KEY (assessment_uuid)
         REFERENCES assessments(uuid)
         ON DELETE CASCADE,
 
-    FOREIGN KEY (user_uuid)
+    FOREIGN KEY (team_member_uuid)
         REFERENCES project_team_members(uuid)
         ON DELETE CASCADE
 );
@@ -142,12 +145,106 @@ CREATE TABLE findings (
     remediation TEXT,
     reference TEXT,
     proof_of_concept TEXT,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
 
     assessment_uuid UUID,
 
     FOREIGN KEY (assessment_uuid)
         REFERENCES assessments(uuid)
         ON DELETE CASCADE
+);
+
+-- ASSET TYPES
+CREATE TABLE asset_types (
+    uuid UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+
+    name TEXT NOT NULL,
+    description TEXT NOT NULL
+);
+
+-- ASSET STATUSES
+CREATE TABLE asset_statuses (
+    uuid UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+
+    name TEXT NOT NULL,
+    description TEXT NOT NULL
+);
+
+-- ASSETS
+CREATE TABLE assets (
+    uuid UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+
+    type_uuid UUID,
+    name TEXT NOT NULL,
+    status_uuid UUID,
+
+    owner UUID REFERENCES users(uuid) ON DELETE SET NULL,
+    criticality SMALLINT DEFAULT 0,
+    metadata JSONB DEFAULT '{}',
+
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (type_uuid)
+        REFERENCES asset_types(uuid)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (status_uuid)
+        REFERENCES asset_statuses(uuid)
+        ON DELETE CASCADE
+);
+
+-- ASSESSMENT ASSETS 
+CREATE TABLE assessment_assets (
+    assessment_uuid UUID,
+    asset_uuid UUID,
+    
+    PRIMARY KEY (assessment_uuid, asset_uuid), 
+
+    FOREIGN KEY (assessment_uuid)
+        REFERENCES assessments(uuid)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (asset_uuid)
+        REFERENCES assets(uuid)
+        ON DELETE CASCADE
+);
+
+CREATE TYPE finding_status_enum AS ENUM (
+    'Open',
+    'Closed',
+    'Risk Acceptance'
+);
+
+-- ASSET FINDINGS 
+CREATE TABLE asset_findings (    
+    asset_uuid UUID,
+    finding_uuid UUID,
+    status finding_status_enum,
+
+    PRIMARY KEY (asset_uuid, finding_uuid),
+
+    FOREIGN KEY (finding_uuid)
+        REFERENCES findings(uuid)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (asset_uuid)
+        REFERENCES assets(uuid)
+        ON DELETE CASCADE
+);
+
+-- ASSET RELATIONSHIPS 
+CREATE TABLE asset_relationships (
+    parent_id         UUID REFERENCES assets(uuid) ON DELETE CASCADE,
+    child_id          UUID REFERENCES assets(uuid) ON DELETE CASCADE,
+    relationship_type VARCHAR(50) NOT NULL,
+    first_seen        TIMESTAMPTZ DEFAULT now(),
+    last_seen         TIMESTAMPTZ DEFAULT now(),
+    is_current        BOOLEAN DEFAULT true,
+    created_at        TIMESTAMPTZ DEFAULT now(),
+    updated_at        TIMESTAMPTZ DEFAULT now(),
+    PRIMARY KEY (parent_id, child_id, relationship_type)
 );
 
 CREATE OR REPLACE FUNCTION update_timestamp()
@@ -166,4 +263,24 @@ EXECUTE FUNCTION update_timestamp();
 CREATE INDEX idx_assessment_project ON assessments(project_uuid);
 CREATE INDEX idx_findings_assessment ON findings(assessment_uuid);
 CREATE INDEX idx_project_team_user ON project_teams(team_member_uuid);
-CREATE INDEX idx_assessment_team_user ON assessment_teams(user_uuid);
+CREATE INDEX idx_assessment_team_user ON assessment_teams(team_member_uuid);
+
+CREATE TRIGGER update_asset_relationships_timestamp
+BEFORE UPDATE ON asset_relationships
+FOR EACH ROW
+EXECUTE FUNCTION update_timestamp();
+
+CREATE TRIGGER update_assessments_timestamp
+BEFORE UPDATE ON assessments
+FOR EACH ROW
+EXECUTE FUNCTION update_timestamp();
+
+CREATE TRIGGER update_findings_timestamp
+BEFORE UPDATE ON findings
+FOR EACH ROW
+EXECUTE FUNCTION update_timestamp();
+
+CREATE TRIGGER update_assets_timestamp
+BEFORE UPDATE ON assets
+FOR EACH ROW
+EXECUTE FUNCTION update_timestamp();
