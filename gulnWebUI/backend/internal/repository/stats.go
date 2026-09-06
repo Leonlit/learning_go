@@ -16,9 +16,9 @@ func NewStatsRepository(db *sql.DB) *StatsRepository {
 
 func (r *StatsRepository) GetOwnAssessmentsCount(ctx context.Context, userUUID string) (int, error) {
 	query := `
-		SELECT COUNT(uuid)
-		FROM projects
-		WHERE person_in_charge_uuid = $1
+		SELECT COUNT(assessment_uuid)
+		FROM assessment_teams
+		WHERE user_uuid = $1
 	`
 
 	var count int

@@ -75,7 +75,7 @@ const UserDashboard = () => {
                                 <thead>
                                     <tr>
                                         <th>Projects</th>
-                                        <th>Hosts</th>
+                                        <th>Assessments</th>
                                     </tr>
                                 </thead>
                                 <tbody>
